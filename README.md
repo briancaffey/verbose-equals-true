@@ -667,3 +667,20 @@ git commit -m "added testing, linting, coverage and CI"
 git push -u origin feature-django
 ```
 
+Our tests passed, but if you look at the log of the CI job, I notice that test coverage is not 100%:
+
+```
+$ coverage report
+Name                                    Stmts   Miss  Cover
+-----------------------------------------------------------
+backend/backend/__init__.py                 0      0   100%
+backend/backend/settings-gitlab-ci.py       2      0   100%
+backend/backend/settings.py                19      0   100%
+backend/backend/tests.py                    8      0   100%
+backend/backend/urls.py                     3      0   100%
+backend/backend/wsgi.py                     4      4     0%
+backend/manage.py                           9      2    78%
+-----------------------------------------------------------
+TOTAL                                      45      6    87%
+```
+

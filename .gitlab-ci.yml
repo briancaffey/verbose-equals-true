@@ -26,5 +26,7 @@ test:
   script:
   - python3 backend/manage.py test --settings backend.settings-gitlab-ci
   - flake8 backend
-  - coverage run --source='backend' backend/manage.py test backend --settings backend.settings-gitlab-ci
+  - cd backend
+  - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
   - coverage report
+
