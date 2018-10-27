@@ -2,6 +2,9 @@
 # https://hub.docker.com/r/library/python
 image: python:3.6
 
+stages:
+  - test
+
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
@@ -20,7 +23,8 @@ cache:
 before_script:
   - pip install -r backend/requirements.txt
 
-test:
+runtest:
+  stage: test
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
@@ -30,3 +34,9 @@ test:
   - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
   - coverage report
 
+coverage:
+  stage: test
+  script:
+    - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
+    - coverage report -m
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
