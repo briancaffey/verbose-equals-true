@@ -612,6 +612,9 @@ Now that we have linting, testing and code coverage, we should add continuous in
 # https://hub.docker.com/r/library/python
 image: python:3.6
 
+stages:
+  - test
+
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
 # Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
@@ -630,14 +633,24 @@ cache:
 before_script:
   - pip install -r backend/requirements.txt
 
-test:
+runtest:
+  stage: test
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
   - python3 backend/manage.py test --settings backend.settings-gitlab-ci
   - flake8 backend
-  - coverage run --source='backend' backend/manage.py test backend --settings backend.settings-gitlab-ci
+  - cd backend
+  - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
   - coverage report
+
+coverage:
+  stage: test
+  script:
+    - cd backend
+    - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
+    - coverage report -m
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
 ```
 
 Notice that this file references `backend.settings-gitlab-ci`. We need to create this file so that we can use special settings in our project that we want to use only for running our tests. 
@@ -667,20 +680,16 @@ git commit -m "added testing, linting, coverage and CI"
 git push -u origin feature-django
 ```
 
-Our tests passed, but if you look at the log of the CI job, I notice that test coverage is not 100%:
+Now let's commit our code and merge these changes into the master branch. 
+
+To do this, let's first merge the feature branch into develop, and then create a release branch from the develop branch, and then merge this branch into the master branch:
 
 ```
-$ coverage report
-Name                                    Stmts   Miss  Cover
------------------------------------------------------------
-backend/backend/__init__.py                 0      0   100%
-backend/backend/settings-gitlab-ci.py       2      0   100%
-backend/backend/settings.py                19      0   100%
-backend/backend/tests.py                    8      0   100%
-backend/backend/urls.py                     3      0   100%
-backend/backend/wsgi.py                     4      4     0%
-backend/manage.py                           9      2    78%
------------------------------------------------------------
-TOTAL                                      45      6    87%
+git checkout develop
+git merge feature-django
+git checkout -b release-0.0.1
+git checkout master
+git merge release-0.0.1 --no-ff
+git tag -a 0.0.1
+git push --all
 ```
-
