@@ -37,6 +37,7 @@ runtest:
 coverage:
   stage: test
   script:
+    - cd backend
     - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
     - coverage report -m
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
