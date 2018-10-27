@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 
+
 class TestDatabase(TestCase):
     def test_create_user(self):
         user = User.objects.create_user(

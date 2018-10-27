@@ -482,3 +482,188 @@ git add .
 git checkout -b feature-django
 git commit -m "added django project that works with docker-compose"
 ```
+
+Let's stay on the `feature-django` feature branch and some additional components to the Django portion of our site. First, let's ensure that we are writing well-formatted code by using linting. 
+
+Let's add `flake8` to our `requirements.txt` file. This package will be used to do our code linting. 
+
+You can read more about `flake8` [here](https://gitlab.com/pycqa/flake8). 
+
+We also want to create a virtual environment on our local machine so that VSCode can do linting while we work in VSCode. 
+
+We can add this with `virtualenv`: 
+
+```
+$ virtualenv -p python3.6 .env
+```
+
+Let's also add a `.gitignore` to keep the `.env` folder out of source control: 
+
+**.gitignore**
+
+```
+.env
+```
+
+Now let's activate the virtual environment in our VSCode terminal: 
+
+```
+source .env/bin/activate
+pip install -r backend/requirements.txt
+```
+
+Now let's run `flake8`:
+
+```
+$ flake8 backend/
+backend/backend/tests.py:4:1: E302 expected 2 blank lines, found 1
+backend/backend/settings.py:92:80: E501 line too long (91 > 79 characters)
+backend/backend/settings.py:95:80: E501 line too long (81 > 79 characters)
+backend/backend/settings.py:98:80: E501 line too long (82 > 79 characters)
+backend/backend/settings.py:101:80: E501 line too long (83 > 79 characters)
+```
+
+Let's add a new line in `backend/backend/tests.py` and also add `# noqa` to the end of the long lines in settings so `flake8` will ignore these lines. 
+
+Let's run `flake8 backend` in our local machine and we should see no errors. To confirm this, run:
+
+```
+echo $?
+```
+
+This will return the exit code of the last command. If you see `0`, then `flake8` found no errors. If you remove a `# noqa` from the end of one of the long lines, then you will see the linting error printed out, and you will see that the result of `$?` is `1`. 
+
+Now that we have basic testing and linting, we should add code coverage. Django has official recommendations for how to use `coverage.py` with Django projects [here](https://docs.djangoproject.com/en/2.1/topics/testing/advanced/). 
+
+Add `coverage` to `requirements.txt`, and restart `docker-compose`:
+
+We can't run this command locally because it depends on running tests which requires our database.
+
+Now, let's shell into the `backend` container: 
+
+```
+docker exec -it backend /bin/bash
+```
+
+```
+root@3246d185a19c:/code# cd backend
+root@3246d185a19c:/code/backend# coverage run --source='.' manage.py test backend
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.081s
+
+OK
+Destroying test database for alias 'default'...
+root@3246d185a19c:/code/backend# coverage report
+Name                  Stmts   Miss  Cover
+-----------------------------------------
+backend/__init__.py       0      0   100%
+backend/settings.py      19      0   100%
+backend/tests.py          8      0   100%
+backend/urls.py           3      0   100%
+backend/wsgi.py           4      4     0%
+manage.py                 9      2    78%
+-----------------------------------------
+TOTAL                    43      6    86%
+root@3246d185a19c:/code/backend#
+```
+
+Let's ignore `backend/wsgi.py` and `manage.py` by adding these to a new file that will live in the root of our Django application:
+
+**.coveragerc**
+
+```
+[run]
+omit =
+    backend/wsgi.py
+    manage.py
+```
+
+Now we see the following results: 
+
+```
+root@3246d185a19c:/code/backend# coverage run --source='.' manage.py test backend
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.083s
+
+OK
+Destroying test database for alias 'default'...
+root@3246d185a19c:/code/backend# coverage report
+Name                  Stmts   Miss  Cover
+-----------------------------------------
+backend/__init__.py       0      0   100%
+backend/settings.py      19      0   100%
+backend/tests.py          8      0   100%
+backend/urls.py           3      0   100%
+-----------------------------------------
+TOTAL                    30      0   100%
+root@3246d185a19c:/code/backend#
+```
+
+Now that we have linting, testing and code coverage, we should add continuous integration to our project. Since we are using GitLab, using continuous integration is as simple as adding one file to the root of our project that is called `gitlab-ci.yml`:
+
+```yml
+# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/python
+image: python:3.6
+
+# Pick zero or more services to be used on all builds.
+# Only needed when using a docker container to run your tests in.
+# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
+services:
+  - postgres:latest
+
+variables:
+  POSTGRES_DB: postgres
+
+# This folder is cached between builds
+# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
+cache:
+  paths:
+  - ~/.cache/pip/
+
+before_script:
+  - pip install -r backend/requirements.txt
+
+test:
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  script:
+  - python3 backend/manage.py test --settings backend.settings-gitlab-ci
+  - flake8 backend
+  - coverage run --source='backend' backend/manage.py test backend --settings backend.settings-gitlab-ci
+  - coverage report
+```
+
+Notice that this file references `backend.settings-gitlab-ci`. We need to create this file so that we can use special settings in our project that we want to use only for running our tests. 
+
+Next to `backend/backend/settings.py`, let's create `settings-gitlab-ci.py`:
+
+```python
+from .settings import * # noqa
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ci',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',
+        'PORT': '5432',
+    },
+}
+```
+
+Now let's commit our changes and push our code to GitLab: 
+
+```
+git add .
+git commit -m "added testing, linting, coverage and CI"
+git push -u origin feature-django
+```
+
