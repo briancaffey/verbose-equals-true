@@ -1307,3 +1307,170 @@ What this means is that we will ultimately need two different versions of our ex
 We actually *will also* be able to use verion `1` during local development, but our changes won't be reflected immediately. We'll see all of this in action very soon. 
 
 Before we split our `docker-compose.yml` into a development version and a production version, let's commit our changes. 
+
+```
+git add .
+git commit -m "added vuejs app in frontend"
+```
+
+Next, let's create `docker-compose.dev.yml`: 
+
+```
+cp docker-compose.yml docker-compose.dev.yml
+```
+
+We will need to introduce two new services in `docker-compose.dev.yml`: `frontend` and `nginx`. We will also introduce a [network](https://docs.docker.com/network/) that will help our services communicate through the docker engine. (We'll explore this soon).
+
+### Networks
+
+There are several types of networks that docker supports, but we will use one called "user-defined bridge networks". 
+
+> User-defined bridge networks are best when you need multiple containers to communicate on the same Docker host. We will add these to `docker-compose.dev.yml` after we add the `frontend` and `nginx` services. 
+
+More information on docker networks can be found [here](https://docs.docker.com/network/).
+
+### `frontend` service
+
+`frontend` will use a `node` base image and it will run `npm run serve` so that we can watch for changes to files in our project and see the result instantly. 
+
+Here's what the service will look like in `docker-compose.dev.yml`:
+
+```yml
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app/frontend:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - main
+    depends_on:
+      - backend
+      - db
+```
+
+For this service, we will be looking for a `Dockerfile` in `frontend`. We know this from the `build/context` part of the service definition:
+
+```yml
+    build:
+      context: ./frontend
+```
+
+Let's create this `Dockerfile`, and then continue looking at the `frontend` service in `docker-compose.dev.yml`. 
+
+### `frontend` Dockerfile
+
+```
+FROM node:9.11.1-alpine
+
+# make the 'app' folder the current working directory
+WORKDIR /app/
+
+# copy package.json to the /app/ folder
+COPY package.json ./
+
+# https://docs.npmjs.com/cli/cache
+RUN npm cache verify
+
+# install project dependencies
+RUN npm install
+
+# copy project files and folders to the current working directory (i.e. 'app' folder)
+COPY . .
+
+# expose port 8080 to the host
+EXPOSE 8080
+
+# run the development server
+CMD ["npm", "run", "serve"]
+```
+
+This Dockerfile says: 
+
+- `FROM node:9.11.1-alpine` Use the base image of `node:9.11.1-alpine`,
+- `WORKDIR /app/` In the container, create a folder in the root of the filesystem called `/app` and move into this directory
+- `COPY package.json ./` Copy `package.json` from our local machine into `/app` (not `/`) in the container
+- `RUN npm install` Install the dependencies into `node_modules`,
+- `COPY . .` Copy over all of the files from our project to `.`, which is `/app` since we set that as `WORKDIR`,
+- `WORKDIR /app/frontend` Change into the folder `/app/frontend` in the container
+- `EXPOSE 8080` Expose port `8080` in the container
+- `CMD ["npm", "run", "serve"]` Run `npm run serve` in the container
+
+Let's continue looking at `docker-compose.dev.yml`. After the `build` section, we see that we are mounting the `frontend` directory from our local machine into `/app/frontend`. `ro` specifies that the mounted volume is read-only. This is fine since we will be editing the files in this volume from our local machine, not from inside of the docker container. 
+
+Next, we see that the service definition for `frontend` lists `main` under networks. This means that the service shares a network with other services that are also on the `main` network. We will see why this is the case soon. 
+
+The `depends_on` section specifies that `db` and `backend` must start before `frontend` is started. 
+
+Let's run `docker-compose` with our new `docker-compose.dev.yml` to do a quick test: 
+
+Let's add a `networks` section to the very bottom of `docker-compose.dev.yml`: 
+
+```yml
+networks: 
+  main:
+    driver: bridge
+```
+
+Our `docker-compose.dev.yml` file should now look like this: 
+
+```yml
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: postgres
+    networks:
+      - main
+
+  backend:
+    container_name: backend
+    build: ./backend
+    command: /start.sh
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+    depends_on:
+      - db
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app/frontend:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - main
+    depends_on:
+      - backend
+      - db
+
+networks: 
+  main:
+    driver: bridge
+```
+
+Let's start this file with the following command:
+
+```
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+We should now be able to see both the Vue application and the Django application by visiting: 
+
+- `localhost:8000/admin` for Django
+- `localhost:8080` for Vue
+
+Let's commit our changes before we add `nginx`. 
+
+```
+git add .
+git commit -m "added docker-compose.dev.yml and a dockerfile for frontend"
+```

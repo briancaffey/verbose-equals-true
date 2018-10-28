@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: postgres
+    networks:
+      - main
+
+  backend:
+    container_name: backend
+    build: ./backend
+    command: /start.sh
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+    depends_on:
+      - db
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app/frontend:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - main
+    depends_on:
+      - backend
+      - db
+
+networks: 
+  main:
+    driver: bridge
