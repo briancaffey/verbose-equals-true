@@ -31,13 +31,13 @@ runtest:
   - python3 backend/manage.py test --settings backend.settings-gitlab-ci
   - flake8 backend
   - cd backend
-  - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
+  - coverage run --source='.' manage.py test --settings backend.settings-gitlab-ci
   - coverage report
 
 coverage:
   stage: test
   script:
     - cd backend
-    - coverage run --source='.' manage.py test backend --settings backend.settings-gitlab-ci
+    - coverage run --source='.' manage.py test --settings backend.settings-gitlab-ci
     - coverage report -m
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'

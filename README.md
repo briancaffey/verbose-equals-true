@@ -693,3 +693,244 @@ git merge release-0.0.1 --no-ff
 git tag -a 0.0.1
 git push --all
 ```
+
+## Django ReST Framework
+
+At this point, we are going to add some additional packages to Django that will allow us to build a powerful API. The [Django ReST Framework](https://www.django-rest-framework.org/) will be responsible for serializing and deserializing our Django models instances to and from JSON. It has many powerful features that make it the most popular package for building APIs with Django. 
+
+In addition to the Django ReST Framework, we will install another package for using JSON Web Tokens for authentication and permission control. This package is called [`djangorestframework_jwt`](https://github.com/GetBlimp/django-rest-framework-jwt) and it is maintained by a company called [Blimp](https://github.com/GetBlimp). 
+
+Before we start, let's go back to the `feature-django` branch to continue our work with the backend Django service:
+
+```
+git checkout feature-django
+```
+
+First let's add these packages to `requirements.txt`:
+
+```python
+djangorestframework
+django-filter
+djangorestframework-jwt
+```
+
+Next, we will need to add the following to `INSTALLED_APPS`:
+
+```python
+
+    'rest_framework',
+
+```
+
+Then we can add the following to `settings.py` after `DATABASES`:
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+We have a little bit more work to do on the backend. Once we build out an authentication system and a basic model like "Blog Posts", we will be ready to set up a front end that will get and post data to our backend Django API. Then we will tie the backend and the frontend together with a powerful webserver and reverse proxy: NGINX.
+
+First, we need a new Django app to organize our project's users. Let's create a new app called `accounts`. We will need to issue a `startapp` command to the `backend` container, change permissions on those files, and then add the name of the app to `INSTALLED_APPS` so our project becomes aware of it. We will also need to create API endpoints. Let's do this all step-by-step.
+
+First, let's make the app:
+
+```
+docker exec -it backend python3 backend/manage.py startapp accounts
+```
+
+Set permissions on the files in the `accounts` app: 
+
+```
+sudo chown -R $USER:$USER .
+```
+
+Now let's hook up our `accounts` app to the rest of our Django project. Add `'accounts'` to `INSTALLED_APPS` and add the following to the `urls.py` file in `backend`:
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('', include('accounts.urls')),
+    path('admin/', admin.site.urls),
+]
+```
+
+Add `urls.py` to `accounts` and add the following: 
+
+Now, to the `urls.py` file in the `accounts` app, add the following: 
+
+```python
+from django.urls import re_path
+from rest_framework_jwt.views import (
+    obtain_jwt_token,
+    refresh_jwt_token,
+    verify_jwt_token,
+)
+
+urlpatterns = [
+    re_path(
+        r'^auth/obtain_token/',
+        obtain_jwt_token,
+        name='api-jwt-auth'
+    ),
+    re_path(
+        r'^auth/refresh_token/',
+        refresh_jwt_token,
+        name='api-jwt-refresh'
+    ),
+    re_path(
+        r'^auth/verify_token/',
+        verify_jwt_token,
+        name='api-jwt-verify'
+    ),
+]
+```
+
+The first route will return a JSON response containing a special token when we send a POST request with the correct `username` and `password`. Actually, `djangorestframework_jwt` supports `AbstractBaseUser`, so we should be able to authenticate with any combination of credentials, but we will only be looking at the standard user model for now. 
+
+Let's write a test to see how this works in action. In `accounts/tests.py`, add the following:
+
+```python
+from django.urls import reverse
+from rest_framework.test import APITestCase
+from rest_framework import status
+
+
+from django.contrib.auth.models import User
+
+class AccountsTests(APITestCase):
+
+    def test_obtain_jwt(self):
+
+        # create an inactive user
+        url = reverse('api-jwt-auth')
+        u = User.objects.create_user(username='user', email='user@foo.com', password='pass')
+        u.is_active = False
+        u.save()
+
+        # authenticate with username and password
+        resp = self.client.post(url, {'email':'user@foo.com', 'password':'pass'}, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        
+        # set the user to activate and attempt to get a token from login
+        u.is_active = True
+        u.save()
+        resp = self.client.post(url, {'username':'user', 'password':'pass'}, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertTrue('token' in resp.data)
+        token = resp.data['token']
+
+        # print the token
+        print(token)
+```
+
+We can run this test like this: 
+
+```
+docker exec -it backend python3 backend/manage.py test accounts
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6InVzZXIiLCJleHAiOjE1NDA2ODg4MjMsImVtYWlsIjoidXNlckBmb28uY29tIn0.9nXmNoF0dX-N5yh33AXX6swT5zDchosNI0-bcsdSUEk
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.173s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+Our test passes, and we can see the JWT printed out at the end of the test. Here's a JWT, decoded:
+
+```
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTM4MzMwNTk5LCJlbWFpbCI6IiJ9.rIHFjBmbqBHnqKwCNlHenImMtQSmzFkbGLA8pddQ6AY
+```
+
+Decoded, this JWT contains the following information: 
+
+```json
+{"typ":"JWT","alg":"HS256"}{"user_id":2,"username":"admin","exp":1538330599,"email":""}Ō稬6QޜY<P
+```
+
+The first part of JSON identifies the type of token and the hashing algorithm used. The second part is a JSON representation of the authenticated user, with additional information about when the token expires. The third part is a signature that uses the `SECRET_KEY` of our Django application for security.
+
+We can also try this enpoint in the Django ReST Framework's browseable API by going to `http://0.0.0.0:8000/auth/obtain_token/`. You will see this:
+
+```
+HTTP 405 Method Not Allowed
+Allow: POST, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+{
+    "detail": "Method \"GET\" not allowed."
+}
+```
+
+This makes sense, because this endpoint only accepts POST requests. From the browseable API, we can make a POST request using our superuser account. Below this message, you will see a form that allows us to enter a username and password. 
+
+Let's create a superuser and do a quick check that this is working inside of the browsable API: 
+
+```
+docker exec -it backend python3 backend/manage.py createsuperuser
+Username (leave blank to use 'root'): admin
+Email address:
+Password:
+Password (again):
+Superuser created successfully.
+```
+
+Entering our username and password for the user we created in the browsable API login form, we can see that a token is return in the respsonse body.
+
+Let's remove `tests.py` from `backend/backend`. This test is no longer needed since the `accounts` tests test similar functionality. Also, let's edit the `gitlab-ci.yml` file to just run `./manage.py test accounts`:
+
+```yml
+runtest:
+  stage: test
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  script:
+  - python3 backend/manage.py test --settings backend.settings-gitlab-ci
+  - flake8 backend
+  - cd backend
+  - coverage run --source='.' manage.py test accounts --settings backend.settings-gitlab-ci
+  - coverage report
+
+coverage:
+  stage: test
+  script:
+    - cd backend
+    - coverage run --source='.' manage.py test accounts --settings backend.settings-gitlab-ci
+    - coverage report -m
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+```
+
+Let's also tweak our `.coveragerc` file:
+
+```ini
+[run]
+omit =
+    backend/*
+    accounts/apps.py
+    manage.py
+```
+
+Let's pause here and commit our work.
+
+```
+flake8 backend
+docker-compose run backend 
+git add .
+git commit -m "added drf, jwt and authentication tests"
+git push
+```
+
