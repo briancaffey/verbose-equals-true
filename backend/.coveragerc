@@ -1,4 +1,5 @@
 [run]
 omit =
-    backend/wsgi.py
+    backend/*
+    accounts/apps.py
     manage.py

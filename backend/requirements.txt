@@ -1,4 +1,7 @@
 coverage==4.5
 Django==2.1
+djangorestframework
+django-filter
+djangorestframework-jwt
 flake8==3.6
 psycopg2==2.7
