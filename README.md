@@ -1474,3 +1474,98 @@ Let's commit our changes before we add `nginx`.
 git add .
 git commit -m "added docker-compose.dev.yml and a dockerfile for frontend"
 ```
+
+## NGINX
+
+At this point it makes sense to introduce NGINX. 
+
+NGINX is a webserver and reverse proxy that will play an important role in our application. NGINX is analogous to the "front desk" in our applicatoin in that it directs traffic to the files or service URLs that specifies. 
+
+For example, we will tell NGING to send all requests that start with `/api` or `/admin` to be sent to our Django server, not our `node` server. This makes sense, because our `node` server won't know what to do with `/api` or `/admin` requests.
+
+If you are familiar with Django's URL routing, I think it is fair to say that NGINX is like a higher-level version of `urls.py` in that it directs traffic based on the properties of the incoming URLs. It will also handle `https`, serving static files, and more. We'll see all of this later, but for now let's just introduce it to our `docker-compose.dev.yml` file so we can use it in local development. 
+
+Let's add the following to our `docker-compose.dev.yml` file: 
+
+```yml
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - main
+```
+
+We don't need a `Dockerfile` for this service since we only need the base image: `nginx:alpine`. This means that we don't need to specify a `build` section for the service definition. 
+
+Note that we do need to mount a file called `dev.conf` into the container. This will be the NGINX configuration file that we write to tell NGINX how to handle traffic that it receives on port `8001`. 
+
+Let's make a top-level folder called `nginx`, and inside that folder create a file called `dev.conf` with the following content: 
+
+**nginx/dev.conf**
+
+```
+user  nginx;
+worker_processes  1;
+
+events {
+  worker_connections  1024;
+}
+
+http {
+  include /etc/nginx/mime.types;
+  client_max_body_size 100m;
+
+  upstream backend {
+    server backend:8000;
+  }
+
+  upstream frontend {
+    server frontend:8080;
+  }
+
+  server {
+    listen 80;
+    charset utf-8;
+
+    # frontend urls
+    location / {
+    proxy_redirect off;
+    proxy_pass http://frontend;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    }
+
+    # frontend dev-server
+    location /sockjs-node {
+      proxy_redirect off;
+      proxy_pass http://frontend;
+      proxy_set_header X-Real-IP  $remote_addr;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    }
+
+    # backend urls
+    location ~ ^/(admin|api|static) {
+      proxy_redirect off;
+      proxy_pass http://backend;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+    }
+  }
+}
+```
+
+Now visit `localhost:8001` and you should see the Vue app as well as some logs from the `nginx` service in the docker-compose output with `200` status messages. 
+
+`localhost:8001/admin` should display the Django admin interface. 
+
+I chose to map port `8001` to NGINX's port `80` somewhat arbitrarily. You might have some other service running on your local machine that is using port 80. If we tried to map port `80` on our host to port `80` in a container while port `80` on our host was in use, the docker engine would tell us that the service is not available and it would not start the container. 
+
+Let's commit these changes and then make some additional optimizations.

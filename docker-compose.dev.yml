@@ -34,6 +34,18 @@ services:
       - backend
       - db
 
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - main
+
 networks: 
   main:
     driver: bridge
