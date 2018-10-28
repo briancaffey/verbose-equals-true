@@ -1185,3 +1185,125 @@ git merge release-0.0.2
 git tag -a 0.0.2
 git push --all --tags
 ```
+
+## Frontend
+
+Let's create a new feature branch to start work on our frontend:
+
+```
+git checkout -b feature-vue develop
+```
+
+This will make a new branch called `feature-vue` that will branch off of the `develop` branch.
+
+What we want to do next is add a `frontend` folder to the base of our project that will contain all of our code for the frontend VueJS application. One way to do this is to create a `nodejs` container and use Vue CLI 3, a command line tool for starting VueJS applications. When we create the container, let's mount the `frontend` and run `/bin/sh` so we can run commands at the terminal inside our `nodejs` container. 
+
+Run the following command from the base of our project:
+
+```
+mkdir frontend
+docker run --rm -it -v ~/gitlab/verbose-equals-true/frontend:/code node:9.11.1-alpine /bin/sh
+```
+
+We are now in the nodejs container. From here we can install `vue` and `vue-cli-3` and create our Vue application. Run the following commands inside the container:
+
+```
+# cd code
+# npm i -g vue @vue/cli
+# vue create .
+```
+
+Here's the full output:
+
+```
+docker run --rm -it -v ~/gitlab/verbose-equals-true/frontend:/code node:9.11.1-alpine /bin/sh
+Unable to find image 'node:9.11.1-alpine' locally
+9.11.1-alpine: Pulling from library/node
+605ce1bd3f31: Pull complete
+7cc38010b685: Pull complete
+88a635599bc5: Pull complete
+Digest: sha256:f8f6c69cce180a9a7c9fa685c86671b1e1f2ea7cc5f9a0dbe99d30cc7a0b6cbe
+Status: Downloaded newer image for node:9.11.1-alpine
+/ # cd code/
+/code # npm i -g vue @vue/cli
+/usr/local/bin/vue -> /usr/local/lib/node_modules/@vue/cli/bin/vue.js
+
+> protobufjs@6.8.8 postinstall /usr/local/lib/node_modules/@vue/cli/node_modules/protobufjs
+> node scripts/postinstall
+
+
+> nodemon@1.18.5 postinstall /usr/local/lib/node_modules/@vue/cli/node_modules/nodemon
+> node bin/postinstall || exit 0
+
+Love nodemon? You can now support the project via the open collective:
+ > https://opencollective.com/nodemon/donate
+
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules/@vue/cli/node_modules/fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+
++ @vue/cli@3.0.5
++ vue@2.5.17
+added 631 packages in 43.452s
+/code # vue create .
+```
+
+After you run `vue create .`, you will be prompted to make decisions for your Vue Project. Let's choose the following options: 
+
+- Create the project in the current folder? `Y`
+- Please pick a preset: `Manually select features`
+- Check the features needed for your project: (select all except for TypeScript)
+  - Babel
+  - PWA
+  - Router
+  - Vuex
+  - CSS Pre-processors
+  - Linter /Formatter
+  - Unit Testing
+  - E2E Testing
+- User history mode for router? `Y`
+- Pick a CSS pre-processor `Sass/SCSS`
+- Pick a linter / formatter config: `ESLint + Airbnb config`
+- Pick additional lint features: `Lint on save`
+- Pick a unit testing solution: `Jest`
+- Pick a E2E testing solution: `Nightwatch (Selenium-based)`
+- Where do you prefer placing config for Babel, PostCSS, ESLint, etc.? `In package.json`
+- Save this as a preset for future projects? `N`
+- Pick the package manager to use whne installing dependencies: `Use NPM`
+
+Notice that the router options gave us a message: `Requires proper server setup for index fallback in production`. We will address this later on when we integrate our frontend with our backend and webserver. 
+
+You should now see that the the project was created inside of the `frontend` folder. Let's change permissions for these files since they were created by docker as root:
+
+```
+sudo chown -R $USER:$USER .
+```
+
+Let's make one small but important change to the `.gitignore` file that was generated when we created the Vue application:
+
+```
+node_modules/*
+!node_modules/.gitkeep
+```
+
+Inside of `.gitkeep`, let's include the following link for reference: 
+
+```
+https://www.git-tower.com/learn/git/faq/add-empty-folder-to-version-control
+```
+
+We are now almost ready to start developing our Vue app. But before we do that, we need to talk about environments. One of the main reasons for using docker is so that we can have the same environment for local development, staging servers, testing, and production (and perhaps even other environments such as a `debug` environment).
+
+A VueJS app is nothing more than a `collection of static files`. However, when we develop our VueJS app, we will be working with `.vue` files that take advantage of modern Javascript features (ES6). When we run `npm run build`, the `.vue` files and other files are bundled into a `collection of static files` that are delivered to the browser, so they don't include `.vue` files; they only `.html`, `.js` and `.css` files.
+
+We also want to take advantage of hot-reloading. This is a feature of modern Javascript frameworks and tools like webpack that allows us to view the changes we make in our app in the browser as we save changes in our code editor. This means that we can make changes to `.vue` files, and then we will be able to see changes instantly in a browser that is showing us a preview. This "preview" is started by running `npm run serve`. This is the mode that we will use as we develop our app. It is not using the `collection of static files` that we will use in production, but the application's behavior when using `npm run serve` is very similar to the application that we get when we generate the `collection of static files`. 
+
+Since docker is all about maintaining the same environment between development, testing, staging/QA and prodcution, we need to be careful when we start introducing different environments. It wouldn't be practical to run `npm run build` after every change we made while developing our app; this command takes some time to generate the `collection of static files`. So although it is breaking a core principle of docker, using different environments for local development and production is necessary for our application. 
+
+What this means is that we will ultimately need two different versions of our existing `docker-compose.yml` file: 
+
+1. One that serves a `collection of static files` for production, and 
+2. One that offers us hot reloading during our development process via a `nodesj` server
+
+We actually *will also* be able to use verion `1` during local development, but our changes won't be reflected immediately. We'll see all of this in action very soon. 
+
+Before we split our `docker-compose.yml` into a development version and a production version, let's commit our changes. 
