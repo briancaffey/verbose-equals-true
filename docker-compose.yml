@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: postgres
+  backend:
+    container_name: backend
+    build: ./backend
+    command: /start.sh
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db

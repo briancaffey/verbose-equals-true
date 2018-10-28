@@ -1,0 +1,4 @@
+[run]
+omit =
+    backend/wsgi.py
+    manage.py
