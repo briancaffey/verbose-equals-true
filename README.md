@@ -934,3 +934,241 @@ git commit -m "added drf, jwt and authentication tests"
 git push
 ```
 
+## Sample Model
+
+Now that we have a working user authentication system, let's create a simple "Blog Post" model in a new app called `posts`. I'm going to borrow code from [this Django Rest Framework tutorial](https://wsvincent.com/django-rest-framework-tutorial/). 
+
+Create a `posts` app in our Django project through `docker exec` as we did before:
+
+```
+docker exec -it backend python3 backend/manage.py startapp posts
+sudo chown -R $USER:$USER .
+mv posts/ backend/
+```
+
+Next, add `posts` to `INSTALLED_APPS`, and link up the urls in `backend` with: 
+
+**backend/backend/urls.py**
+
+```python
+urlpatterns = [
+  ...
+  path('api/posts/', include('posts.urls')),
+]
+```
+
+Now we can add the model: 
+
+**backend/posts/models.py**
+
+```python
+from django.db import models
+
+class Post(models.Model):
+    title = models.CharField(max_length=50)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+```
+
+Next let's register this app with the Django admin: 
+
+**backend/posts/admin.py**
+
+```python
+from django.contrib import admin
+from . models import Post
+
+admin.site.register(Post)
+```
+
+Then add a serializer for this model by creating `serializers.py` in the `posts` folder: 
+
+**backend/posts/serializers.py**
+
+```python
+from rest_framework import serializers
+from . import models
+
+
+class PostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('id', 'title', 'content', 'created_at', 'updated_at',)
+        model = models.Post
+
+```
+
+We will need to add `urls.py` to `posts` with the following: 
+
+**backend/posts/urls.py**
+
+```python
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.PostList.as_view(), name='posts'),
+    path('<int:pk>/', views.PostDetail.as_view(), name='post-detail'),
+]
+```
+
+Finally, we will add two views that we mapped to endpoints in the code above:
+
+**backend/posts/views.py**
+
+```python
+from rest_framework import generics
+
+from .models import Post
+from .serializers import PostSerializer
+
+
+class PostList(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class PostDetail(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+```
+
+Now, let's add some Post objects in the Django admin. Before we do this, we will need to make migrations run the migrations:
+
+```
+docker exec -it backend python3 backend/manage.py makemigrations
+Migrations for 'posts':
+  backend/posts/migrations/0001_initial.py
+    - Create model Post
+```
+
+And then run migrations:
+
+```
+docker exec -it backend python3 backend/manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, contenttypes, posts, sessions
+Running migrations:
+  Applying posts.0001_initial... OK
+```
+
+Now we can add some `Post` objects.
+
+Go back to the browsable api and visit `/api/posts/`. You should see the posts you created in admin. 
+
+Earlier we configured `REST_FRAMEWORK` in `backend/backend/settings.py`. Let's see what happens when we remove session and basic authentication:
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+Now, when we visit `/api/posts/` again, we should see:
+
+```json
+HTTP 401 Unauthorized
+Allow: GET, HEAD, OPTIONS
+Content-Type: application/json
+Vary: Accept
+WWW-Authenticate: JWT realm="api"
+
+{
+    "detail": "Authentication credentials were not provided."
+}
+```
+
+Let's restore the original settings for `REST_FRAMEWORK` for now:
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+Before we start working on our frontend, let's write some tests to make sure that access to our posts is limited to requests that come with a valid token. 
+
+**posts/tests.py**
+
+```python
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+from rest_framework import status
+
+from rest_framework_jwt.settings import api_settings
+
+
+class TestPosts(TestCase):
+    """Post Tests"""
+
+    def test_get_posts(self):
+        """
+        Unauthenticated users should not be able to access posts via APIListView
+        """
+        url = reverse('posts')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_header_for_token_verification(self):
+        """
+        https://stackoverflow.com/questions/47576635/django-rest-framework-jwt-unit-test
+        Tests that users can access posts with JWT tokens
+        """
+
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+        user = User.objects.create_user(username='user', email='user@foo.com', password='pass')
+        user.is_active = True
+        user.save()
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+
+        verify_url = reverse('api-jwt-verify')
+        credentials = {
+            'token': token
+        }
+
+        resp = self.client.post(verify_url, credentials, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+```
+
+Let's add a `.flake8` file to `/backend` so that flake8 will ignore migration files:
+
+**backend/.flake8***
+
+```
+[flake8]
+exclude =
+    */migrations/*
+```
+
+More information on configuring flake8 can be found [here](http://flake8.pycqa.org/en/3.1.1/user/configuration.html).
+
+Let's commit our changes: 
+
+```
+git add .
+git commit -m "added posts model, permission tests for post model"
+```
