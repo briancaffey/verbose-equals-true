@@ -1171,4 +1171,17 @@ Let's commit our changes:
 ```
 git add .
 git commit -m "added posts model, permission tests for post model"
+git push
+```
+
+Our automated tests are passing. Let's merge these changes into the `develop` branch. We will leave our `backend` service for now and start working on the frontend of our application. 
+
+```
+git checkout develop
+git merge feature-django
+git checkout -b release-0.0.2 develop
+git checkout master
+git merge release-0.0.2
+git tag -a 0.0.2
+git push --all --tags
 ```
