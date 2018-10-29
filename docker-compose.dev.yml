@@ -2,13 +2,13 @@ version: '3'
 
 services:
   db:
-    container_name: db
+    container_name: db_dev_vet
     image: postgres
     networks:
       - main
 
   backend:
-    container_name: backend
+    container_name: backend_dev_vet
     build: ./backend
     command: /start_dev.sh
     volumes:
@@ -22,7 +22,7 @@ services:
       - db
 
   frontend:
-    container_name: frontend
+    container_name: frontend_dev_vet
     build:
       context: ./frontend
     volumes:
@@ -37,7 +37,7 @@ services:
       - db
 
   nginx:
-    container_name: nginx
+    container_name: nginx_dev_vet
     build:
       context: .
       dockerfile: nginx/dev/Dockerfile
@@ -53,13 +53,13 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis
+    container_name: redis_dev_vet
     networks:
       - main
 
   celery:
     build: ./backend
-    container_name: celery
+    container_name: celery_dev_vet
     command: bash -c 'celery worker --app=backend.celery_app:app --loglevel=info'
     volumes:
       - ./backend:/code
@@ -69,8 +69,18 @@ services:
     networks:
       - main
 
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    ports:
+      - 9000:9000
+
 volumes:
   django-static:
+  portainer-data:
 
 networks: 
   main:

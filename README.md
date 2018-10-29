@@ -2100,3 +2100,40 @@ git tag -a 0.0.5
 git push --all
 git push --tags
 ```
+
+## Portainer
+
+As we add more services to our application, it will be helpful to have a GUI tool to monitor all of the docker containers, volumes and networks on our host machine. We will use [`portainer`](https://portainer.io/) for this. 
+
+> Portainer is an open-source lightweight management UI which allows you to easily manage your docker hosts or swarm clusters. 
+
+Add the following to both `docker-compose.yml` and `docker-compose.dev.yml`: 
+
+```yml
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    ports:
+      - 9000:9000
+
+volumes:
+  django-static:
+  portainer-data:
+```
+
+Also, let's give our containers more precise names so the names don't conflict with any other containers we have running on our local development machine in different projects. In both docker-compose files, change the `container-name` for each service so that they have names specific to their role: 
+
+For each container I will append either `_prod_vet` or `_dev_vet` to specify if the container is for development or production. `vet` will be used to denote the name of the current project we are working on (short for `verbose equals true`). 
+
+I'm doing this to resolve container name conflicts on my local machine with other containers in similar projects. You might not have this issue on your local machine, but it won't hurt to give detailed names to your containers. 
+
+**Note**: We will only use one `portainer` container name as this container is meant to monitor all of the containers on our host. It would not make sense to include multiple `portainer` containers because they will all report the same information. 
+
+Before we commit our work, run the two different environments and confirm that you can access `portainer` by navigating to `localhost:9000`. 
+
+```
+docker-compose up
+```
