@@ -4,13 +4,41 @@ services:
   db:
     container_name: db
     image: postgres
+    networks:
+      - main
+
   backend:
     container_name: backend
     build: ./backend
-    command: /start.sh
+    command: /start_prod.sh
     volumes:
       - .:/code
+      - django-static:/backend/static
     ports:
       - "8000:8000"
+    networks:
+      - main
     depends_on:
       - db
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: nginx/prod/Dockerfile
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/prod/prod.conf:/etc/nginx/nginx.conf:ro
+      - django-static:/usr/src/app/static
+    networks:
+      - main
+
+volumes:
+  django-static:
+
+networks: 
+  main:
+    driver: bridge
