@@ -36,6 +36,24 @@ services:
     networks:
       - main
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - main
+
+  celery:
+    build: ./backend
+    container_name: celery
+    command: bash -c 'celery worker --app=backend.celery_app:app --loglevel=info'
+    volumes:
+      - ./backend:/code
+    depends_on:
+      - db
+      - redis
+    networks:
+      - main
+
 volumes:
   django-static:
 
