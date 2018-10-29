@@ -35,6 +35,8 @@ services:
     depends_on:
       - backend
       - db
+    environment:
+      - NODE_ENV=development
 
   nginx:
     container_name: nginx_dev_vet
