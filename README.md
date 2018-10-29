@@ -1185,3 +1185,622 @@ git merge release-0.0.2
 git tag -a 0.0.2
 git push --all --tags
 ```
+
+## Frontend
+
+Let's create a new feature branch to start work on our frontend:
+
+```
+git checkout -b feature-vue develop
+```
+
+This will make a new branch called `feature-vue` that will branch off of the `develop` branch.
+
+What we want to do next is add a `frontend` folder to the base of our project that will contain all of our code for the frontend VueJS application. One way to do this is to create a `nodejs` container and use Vue CLI 3, a command line tool for starting VueJS applications. When we create the container, let's mount the `frontend` and run `/bin/sh` so we can run commands at the terminal inside our `nodejs` container. 
+
+Run the following command from the base of our project:
+
+```
+mkdir frontend
+docker run --rm -it -v ~/gitlab/verbose-equals-true/frontend:/code node:9.11.1-alpine /bin/sh
+```
+
+We are now in the nodejs container. From here we can install `vue` and `vue-cli-3` and create our Vue application. Run the following commands inside the container:
+
+```
+# cd code
+# npm i -g vue @vue/cli
+# vue create .
+```
+
+Here's the full output:
+
+```
+docker run --rm -it -v ~/gitlab/verbose-equals-true/frontend:/code node:9.11.1-alpine /bin/sh
+Unable to find image 'node:9.11.1-alpine' locally
+9.11.1-alpine: Pulling from library/node
+605ce1bd3f31: Pull complete
+7cc38010b685: Pull complete
+88a635599bc5: Pull complete
+Digest: sha256:f8f6c69cce180a9a7c9fa685c86671b1e1f2ea7cc5f9a0dbe99d30cc7a0b6cbe
+Status: Downloaded newer image for node:9.11.1-alpine
+/ # cd code/
+/code # npm i -g vue @vue/cli
+/usr/local/bin/vue -> /usr/local/lib/node_modules/@vue/cli/bin/vue.js
+
+> protobufjs@6.8.8 postinstall /usr/local/lib/node_modules/@vue/cli/node_modules/protobufjs
+> node scripts/postinstall
+
+
+> nodemon@1.18.5 postinstall /usr/local/lib/node_modules/@vue/cli/node_modules/nodemon
+> node bin/postinstall || exit 0
+
+Love nodemon? You can now support the project via the open collective:
+ > https://opencollective.com/nodemon/donate
+
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.4 (node_modules/@vue/cli/node_modules/fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.4: wanted {"os":"darwin","arch":"any"} (current: {"os":"linux","arch":"x64"})
+
++ @vue/cli@3.0.5
++ vue@2.5.17
+added 631 packages in 43.452s
+/code # vue create .
+```
+
+After you run `vue create .`, you will be prompted to make decisions for your Vue Project. Let's choose the following options: 
+
+- Create the project in the current folder? `Y`
+- Please pick a preset: `Manually select features`
+- Check the features needed for your project: (select all except for TypeScript)
+  - Babel
+  - PWA
+  - Router
+  - Vuex
+  - CSS Pre-processors
+  - Linter /Formatter
+  - Unit Testing
+  - E2E Testing
+- User history mode for router? `Y`
+- Pick a CSS pre-processor `Sass/SCSS`
+- Pick a linter / formatter config: `ESLint + Airbnb config`
+- Pick additional lint features: `Lint on save`
+- Pick a unit testing solution: `Jest`
+- Pick a E2E testing solution: `Nightwatch (Selenium-based)`
+- Where do you prefer placing config for Babel, PostCSS, ESLint, etc.? `In package.json`
+- Save this as a preset for future projects? `N`
+- Pick the package manager to use whne installing dependencies: `Use NPM`
+
+Notice that the router options gave us a message: `Requires proper server setup for index fallback in production`. We will address this later on when we integrate our frontend with our backend and webserver. 
+
+You should now see that the the project was created inside of the `frontend` folder. Let's change permissions for these files since they were created by docker as root:
+
+```
+sudo chown -R $USER:$USER .
+```
+
+Let's make one small but important change to the `.gitignore` file that was generated when we created the Vue application:
+
+```
+node_modules/*
+!node_modules/.gitkeep
+```
+
+Inside of `.gitkeep`, let's include the following link for reference: 
+
+```
+https://www.git-tower.com/learn/git/faq/add-empty-folder-to-version-control
+```
+
+We are now almost ready to start developing our Vue app. But before we do that, we need to talk about environments. One of the main reasons for using docker is so that we can have the same environment for local development, staging servers, testing, and production (and perhaps even other environments such as a `debug` environment).
+
+A VueJS app is nothing more than a `collection of static files`. However, when we develop our VueJS app, we will be working with `.vue` files that take advantage of modern Javascript features (ES6). When we run `npm run build`, the `.vue` files and other files are bundled into a `collection of static files` that are delivered to the browser, so they don't include `.vue` files; they only `.html`, `.js` and `.css` files.
+
+We also want to take advantage of hot-reloading. This is a feature of modern Javascript frameworks and tools like webpack that allows us to view the changes we make in our app in the browser as we save changes in our code editor. This means that we can make changes to `.vue` files, and then we will be able to see changes instantly in a browser that is showing us a preview. This "preview" is started by running `npm run serve`. This is the mode that we will use as we develop our app. It is not using the `collection of static files` that we will use in production, but the application's behavior when using `npm run serve` is very similar to the application that we get when we generate the `collection of static files`. 
+
+Since docker is all about maintaining the same environment between development, testing, staging/QA and prodcution, we need to be careful when we start introducing different environments. It wouldn't be practical to run `npm run build` after every change we made while developing our app; this command takes some time to generate the `collection of static files`. So although it is breaking a core principle of docker, using different environments for local development and production is necessary for our application. 
+
+What this means is that we will ultimately need two different versions of our existing `docker-compose.yml` file: 
+
+1. One that serves a `collection of static files` for production, and 
+2. One that offers us hot reloading during our development process via a `nodesj` server
+
+We actually *will also* be able to use verion `1` during local development, but our changes won't be reflected immediately. We'll see all of this in action very soon. 
+
+Before we split our `docker-compose.yml` into a development version and a production version, let's commit our changes. 
+
+```
+git add .
+git commit -m "added vuejs app in frontend"
+```
+
+Next, let's create `docker-compose.dev.yml`: 
+
+```
+cp docker-compose.yml docker-compose.dev.yml
+```
+
+We will need to introduce two new services in `docker-compose.dev.yml`: `frontend` and `nginx`. We will also introduce a [network](https://docs.docker.com/network/) that will help our services communicate through the docker engine. (We'll explore this soon).
+
+### Networks
+
+There are several types of networks that docker supports, but we will use one called "user-defined bridge networks". 
+
+> User-defined bridge networks are best when you need multiple containers to communicate on the same Docker host. We will add these to `docker-compose.dev.yml` after we add the `frontend` and `nginx` services. 
+
+More information on docker networks can be found [here](https://docs.docker.com/network/).
+
+### `frontend` service
+
+`frontend` will use a `node` base image and it will run `npm run serve` so that we can watch for changes to files in our project and see the result instantly. 
+
+Here's what the service will look like in `docker-compose.dev.yml`:
+
+```yml
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app/frontend:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - main
+    depends_on:
+      - backend
+      - db
+```
+
+For this service, we will be looking for a `Dockerfile` in `frontend`. We know this from the `build/context` part of the service definition:
+
+```yml
+    build:
+      context: ./frontend
+```
+
+Let's create this `Dockerfile`, and then continue looking at the `frontend` service in `docker-compose.dev.yml`. 
+
+### `frontend` Dockerfile
+
+```
+FROM node:9.11.1-alpine
+
+# make the 'app' folder the current working directory
+WORKDIR /app/
+
+# copy package.json to the /app/ folder
+COPY package.json ./
+
+# https://docs.npmjs.com/cli/cache
+RUN npm cache verify
+
+# install project dependencies
+RUN npm install
+
+# copy project files and folders to the current working directory (i.e. 'app' folder)
+COPY . .
+
+# expose port 8080 to the host
+EXPOSE 8080
+
+# run the development server
+CMD ["npm", "run", "serve"]
+```
+
+This Dockerfile says: 
+
+- `FROM node:9.11.1-alpine` Use the base image of `node:9.11.1-alpine`,
+- `WORKDIR /app/` In the container, create a folder in the root of the filesystem called `/app` and move into this directory
+- `COPY package.json ./` Copy `package.json` from our local machine into `/app` (not `/`) in the container
+- `RUN npm install` Install the dependencies into `node_modules`,
+- `COPY . .` Copy over all of the files from our project to `.`, which is `/app` since we set that as `WORKDIR`,
+- `WORKDIR /app/frontend` Change into the folder `/app/frontend` in the container
+- `EXPOSE 8080` Expose port `8080` in the container
+- `CMD ["npm", "run", "serve"]` Run `npm run serve` in the container
+
+Let's continue looking at `docker-compose.dev.yml`. After the `build` section, we see that we are mounting the `frontend` directory from our local machine into `/app/frontend`. `ro` specifies that the mounted volume is read-only. This is fine since we will be editing the files in this volume from our local machine, not from inside of the docker container. 
+
+Next, we see that the service definition for `frontend` lists `main` under networks. This means that the service shares a network with other services that are also on the `main` network. We will see why this is the case soon. 
+
+The `depends_on` section specifies that `db` and `backend` must start before `frontend` is started. 
+
+Let's run `docker-compose` with our new `docker-compose.dev.yml` to do a quick test: 
+
+Let's add a `networks` section to the very bottom of `docker-compose.dev.yml`: 
+
+```yml
+networks: 
+  main:
+    driver: bridge
+```
+
+Our `docker-compose.dev.yml` file should now look like this: 
+
+```yml
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: postgres
+    networks:
+      - main
+
+  backend:
+    container_name: backend
+    build: ./backend
+    command: /start.sh
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+    depends_on:
+      - db
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    volumes:
+      - ./frontend:/app/frontend:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - main
+    depends_on:
+      - backend
+      - db
+
+networks: 
+  main:
+    driver: bridge
+```
+
+Let's start this file with the following command:
+
+```
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+We should now be able to see both the Vue application and the Django application by visiting: 
+
+- `localhost:8000/admin` for Django
+- `localhost:8080` for Vue
+
+Let's commit our changes before we add `nginx`. 
+
+```
+git add .
+git commit -m "added docker-compose.dev.yml and a dockerfile for frontend"
+```
+
+## NGINX
+
+At this point it makes sense to introduce NGINX. 
+
+NGINX is a webserver and reverse proxy that will play an important role in our application. NGINX is analogous to the "front desk" in our applicatoin in that it directs traffic to the files or service URLs that specifies. 
+
+For example, we will tell NGING to send all requests that start with `/api` or `/admin` to be sent to our Django server, not our `node` server. This makes sense, because our `node` server won't know what to do with `/api` or `/admin` requests.
+
+If you are familiar with Django's URL routing, I think it is fair to say that NGINX is like a higher-level version of `urls.py` in that it directs traffic based on the properties of the incoming URLs. It will also handle `https`, serving static files, and more. We'll see all of this later, but for now let's just introduce it to our `docker-compose.dev.yml` file so we can use it in local development. 
+
+Let's add the following to our `docker-compose.dev.yml` file: 
+
+```yml
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - main
+```
+
+We don't need a `Dockerfile` for this service since we only need the base image: `nginx:alpine`. This means that we don't need to specify a `build` section for the service definition. 
+
+Note that we do need to mount a file called `dev.conf` into the container. This will be the NGINX configuration file that we write to tell NGINX how to handle traffic that it receives on port `8001`. 
+
+Let's make a top-level folder called `nginx`, and inside that folder create a file called `dev.conf` with the following content: 
+
+**nginx/dev.conf**
+
+```
+user  nginx;
+worker_processes  1;
+
+events {
+  worker_connections  1024;
+}
+
+http {
+  include /etc/nginx/mime.types;
+  client_max_body_size 100m;
+
+  upstream backend {
+    server backend:8000;
+  }
+
+  upstream frontend {
+    server frontend:8080;
+  }
+
+  server {
+    listen 80;
+    charset utf-8;
+
+    # frontend urls
+    location / {
+    proxy_redirect off;
+    proxy_pass http://frontend;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    }
+
+    # frontend dev-server
+    location /sockjs-node {
+      proxy_redirect off;
+      proxy_pass http://frontend;
+      proxy_set_header X-Real-IP  $remote_addr;
+      proxy_set_header X-Forwarded-For $remote_addr;
+      proxy_set_header Host $host;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+    }
+
+    # backend urls
+    location ~ ^/(admin|api|static) {
+      proxy_redirect off;
+      proxy_pass http://backend;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+    }
+  }
+}
+```
+
+Now visit `localhost:8001` and you should see the Vue app as well as some logs from the `nginx` service in the docker-compose output with `200` status messages. 
+
+`localhost:8001/admin` should display the Django admin interface. 
+
+I chose to map port `8001` to NGINX's port `80` somewhat arbitrarily. You might have some other service running on your local machine that is using port 80. If we tried to map port `80` on our host to port `80` in a container while port `80` on our host was in use, the docker engine would tell us that the service is not available and it would not start the container. 
+
+Let's commit these changes and then make some additional optimizations.
+
+```
+git add .
+git commit -m "added nginx service and added configuration file to new nginx directory"
+```
+
+One simple optimization we can make is not serving static files from Django. By using a shared volume, we can add Django's static files to the NGINX file system so that it can serve resources directly from it's own container. (Later on we will use a similar technique for adding our production-ready VueJS application to NGINX).
+
+We need to change the following files to do this: 
+
+1. Edit `docker-commpose.dev.yml`
+2. Move `nginx/dev.conf` to `nginx/dev/dev.conf`
+3. Edit `nginx/dev/dev.conf`
+4. Add `nginx/dev/DockerfileDev`
+
+In `docker-compose.dev.yml`, we will need to do the following:
+
+- Add a `django-static` volume:
+
+```yml
+volumes:
+  django-static:
+```
+
+- Change the `build` section of the `backend` container: 
+
+```yml
+    build:
+      context: .
+      dockerfile: nginx/dev/Dockerfile
+```
+
+- Mount `django-static` in the `backend` container:
+
+```yml
+    volumes:
+      - .:/code
+      - django-static:/backend/static
+```
+
+- Mount `django-static` in the `nginx` container:
+
+```yml
+    volumes:
+      - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
+      - django-static:/usr/src/app/static
+```
+
+In `nginx/dev/dev.conf` we need to do the following: 
+
+- remove `static` from the `location ~ ^/(admin|api|static)` location block
+- create a new `static` block right after the `(admin|api)` location block as follows:
+
+```
+    # static files
+    location /static {
+      autoindex on;
+      alias /usr/src/app/static;
+    }
+```
+
+Finally, add `nginx/dev/Dockerfile`: 
+
+```
+FROM nginx:1.13.12-alpine
+COPY nginx/dev/dev.conf /etc/nginx/nginx.conf
+COPY backend/static /usr/src/app/static/
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+When we restart docker-compose, we should now see that our static files are served from NGINX directly. 
+
+Let's add a script to clear images and containers from docker: 
+
+**reset_docker.sh**
+
+```bash
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+docker system prune -f
+docker rmi $(docker images -f "dangling=true" -q)
+docker rmi $(docker images -a -q)
+docker rm $(docker ps --filter=status=exited --filter=status=created -q)
+```
+
+Let's commit our changes: 
+
+```
+git add .
+git commit -m "optimized Django application by serving static files from nginx"
+```
+
+## Connecting our backend and frontend
+
+Let's get our backend talking to our frontend. We want to make API calls from our VueJS application that will return data from our Django backend. 
+
+Let's make one correction to our `docker-compose.dev.yml` file in the `volumes` section of the `frontend` service: 
+
+```yml
+    volumes:
+      - ./frontend:/app/:ro
+      - '/app/node_modules'
+```
+
+This will make sure that `node_modules` is not overwritten when mounting files into the `frontend` container. 
+
+Let's keep this as simple as possible and simply list the `Post` objects on the front page of our VueJS application right under the VueJS logo. Also, let's remove the `HelloWorld.vue` component.
+
+To do this, we only need to add the following to the `Home.vue` file:
+
+1. a `fetchPosts` method in the `methods` section of the `script` part of the sigle-file component. 
+
+2. a `mounted` method that calls `this.fetchPosts` to load the posts when the component is mounted. 
+
+3. `data()` method that will return an object that holds `posts: []`
+
+4. String interpolation in the `template` that will display the `title` and `content` attributes of our posts. 
+
+Here's what my `Home.vue` file looks like: 
+
+**frontend/src/views/Home.vue**
+
+```html
+<template>
+  <div class="home">
+    <img alt="Vue logo" src="../assets/logo.png">
+    <h3>Posts</h3>
+    <div v-for="(post, i) in posts" :key="i">
+      <h4>{{ post.title }}</h4>
+      <p>{{ post.content }}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'home',
+  data() {
+    return {
+      posts: [],
+    };
+  },
+  mounted() {
+    this.fetchPosts();
+  },
+  methods: {
+    fetchPosts() {
+      fetch('/api/posts/', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((json) => {
+              this.posts = json;
+            });
+          }
+        });
+    },
+  },
+};
+</script>
+```
+
+Let's go back to our `REST_FRAMEWORK` settings in `settings.py` and comment out the following lines: 
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+Now when we load the Vue app, we should see an error saying: 
+
+```
+GET http://localhost:8001/api/posts/ 401 (Unauthorized)
+```
+
+This means that our request is getting to the backend, but since we are not passing a JWT with the header of the request, we are getting a `401 Unauthorized` status code.
+
+Let's override the default settings by changing the `PostList` view:
+
+**backend/posts/views.py**
+
+```python
+from rest_framework.decorators import (
+    authentication_classes,
+    permission_classes
+)
+
+...
+
+class PostList(generics.ListAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+```
+
+When we save `views.py`, we should see the posts displayed in the VueJS app. Let's remove these changes from `views.py` as they would break our tests. 
+
+We can keep the changes to `REST_FRAMEWORK`. This will leave an important task for us to handle later: adding authentication to our VueJS applicatoin. Let's commit these changes. 
+
+```
+git add .
+git commit -m "added an api call to frontend VueJS app to list posts"
+```
+
+## Production Environment
+
+So far we have been working on our `docker-compose.dev.yml` file that we will use for local development of our application. Let's revisit `docker-compose.yml`. This file will be used t build our production environment. Let's create a new branch called `feature-prod` where we will make changes for our production environment. Let's also merge our current branch, `feature-vue` and create a new minor release. 
+
+```
+git add .
+git commit -m "updated readme"
+git checkout develop
+git merge feature-vue
+git checkout -b release-0.0.3
+git checkout master
+git merge release-0.0.3 --no-ff
+git tag -a 0.0.3
+git push --all
+git push --tags
+```
