@@ -4,4 +4,5 @@ djangorestframework
 django-filter
 djangorestframework-jwt
 flake8==3.6
+gunicorn==19.8
 psycopg2==2.7

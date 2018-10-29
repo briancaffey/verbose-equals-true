@@ -10,7 +10,7 @@ services:
   backend:
     container_name: backend
     build: ./backend
-    command: /start.sh
+    command: /start_dev.sh
     volumes:
       - .:/code
       - django-static:/backend/static
