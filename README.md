@@ -1569,3 +1569,96 @@ Now visit `localhost:8001` and you should see the Vue app as well as some logs f
 I chose to map port `8001` to NGINX's port `80` somewhat arbitrarily. You might have some other service running on your local machine that is using port 80. If we tried to map port `80` on our host to port `80` in a container while port `80` on our host was in use, the docker engine would tell us that the service is not available and it would not start the container. 
 
 Let's commit these changes and then make some additional optimizations.
+
+```
+git add .
+git commit -m "added nginx service and added configuration file to new nginx directory"
+```
+
+One simple optimization we can make is not serving static files from Django. By using a shared volume, we can add Django's static files to the NGINX file system so that it can serve resources directly from it's own container. (Later on we will use a similar technique for adding our production-ready VueJS application to NGINX).
+
+We need to change the following files to do this: 
+
+1. Edit `docker-commpose.dev.yml`
+2. Move `nginx/dev.conf` to `nginx/dev/dev.conf`
+3. Edit `nginx/dev/dev.conf`
+4. Add `nginx/dev/DockerfileDev`
+
+In `docker-compose.dev.yml`, we will need to do the following:
+
+- Add a `django-static` volume:
+
+```yml
+volumes:
+  django-static:
+```
+
+- Change the `build` section of the `backend` container: 
+
+```yml
+    build:
+      context: .
+      dockerfile: nginx/dev/Dockerfile
+```
+
+- Mount `django-static` in the `backend` container:
+
+```yml
+    volumes:
+      - .:/code
+      - django-static:/backend/static
+```
+
+- Mount `django-static` in the `nginx` container:
+
+```yml
+    volumes:
+      - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
+      - django-static:/usr/src/app/static
+```
+
+In `nginx/dev/dev.conf` we need to do the following: 
+
+- remove `static` from the `location ~ ^/(admin|api|static)` location block
+- create a new `static` block right after the `(admin|api)` location block as follows:
+
+```
+    # static files
+    location /static {
+      autoindex on;
+      alias /usr/src/app/static;
+    }
+```
+
+Finally, add `nginx/dev/Dockerfile`: 
+
+```
+FROM nginx:1.13.12-alpine
+COPY nginx/dev/dev.conf /etc/nginx/nginx.conf
+COPY backend/static /usr/src/app/static/
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+When we restart docker-compose, we should now see that our static files are served from NGINX directly. 
+
+Let's add a script to clear images and containers from docker: 
+
+**reset_docker.sh**
+
+```bash
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+docker system prune -f
+docker rmi $(docker images -f "dangling=true" -q)
+docker rmi $(docker images -a -q)
+docker rm $(docker ps --filter=status=exited --filter=status=created -q)
+```
+
+Let's commit our changes: 
+
+```
+git add .
+git commit -m "optimized Django application by serving static files from nginx"
+```

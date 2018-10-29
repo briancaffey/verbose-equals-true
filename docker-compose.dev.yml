@@ -13,6 +13,7 @@ services:
     command: /start.sh
     volumes:
       - .:/code
+      - django-static:/backend/static
     ports:
       - "8000:8000"
     networks:
@@ -36,15 +37,21 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: nginx/dev/Dockerfile
     ports:
       - "8001:80"
     depends_on:
       - backend
     volumes:
-      - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
+      - django-static:/usr/src/app/static
     networks:
       - main
+
+volumes:
+  django-static:
 
 networks: 
   main:
