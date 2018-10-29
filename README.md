@@ -1967,3 +1967,136 @@ git push --all
 git push --tags
 ```
 
+## Celery and Redis
+
+Let's create a new branch called `feature-celery` where we will add Celery to our application. Adding celery and redis will allow us to process tasks asynchronously.
+
+To add celery to our project we will need to do the following: 
+
+- Add `celery` and `redis` services to our docker-compose files
+- Add `celery` and `redis` to our `requirements.txt`
+- Add `celery` settings in `settings.py`
+- Add `celery_app.py` to our Django application
+- Test `celery` and `redis` with a sample task
+
+Add the following to both `docker-compose.yml` and `docker-compose.dev.yml`: 
+
+```yml
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - main
+
+  celery:
+    build: ./backend
+    container_name: celery
+    command: bash -c 'celery worker --app=backend.celery_app:app --loglevel=info'
+    volumes:
+      - ./backend:/code
+    depends_on:
+      - db
+      - redis
+    networks:
+      - main
+```
+
+Now add the following to `requirements.txt`:
+
+```
+celery==4.2
+redis==2.10.5
+```
+
+Add the following to our Django settings (`settings.py`):
+
+```python
+# Celery Configuration
+
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+```
+
+Now add `celery_app.py` next to `settings.py` in Django:
+
+```python
+import os
+from celery import Celery
+import time
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+app = Celery('backend')
+app.config_from_object('django.conf:settings', namespace='CELERY')
+app.autodiscover_tasks()
+
+
+@app.task(bind=True)
+def debug_task(self):
+    print("Doing async task")
+    time.sleep(2)
+    print("Task is done")
+```
+
+Let's test that this sample task is processed in our celery worker. In the `posts` app, let's add a function and map it to a url pattern. We will call the task inside the function body:
+
+**backend/posts/views.py**
+
+```python
+from backend.celery_app import debug_task
+
+from rest_framework import generics
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.response import Response
+
+...
+
+@api_view()
+@authentication_classes([])
+@permission_classes([])
+def celery_test_view(request):
+    debug_task.delay()
+    return Response({"message": "Your task is being processed!"})
+```
+
+**backend/posts/urls.py**
+
+```python
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    ...
+    path('celery-test/', views.celery_test_view, name='celery-test')
+]
+```
+
+Now let's test this sample task. Run:
+
+```
+docker-compose -f docker-compose.dev.yml up --build
+```
+
+Now navigate to `/api/posts/celery-test/`. You should see the JSON response returned right away, and two seconds later you should see the `"Task is done"` message printed out in the `celery` service logs. Also verify that celery tasks are working in the production environment: 
+
+```
+docker-compose up --build
+```
+
+Once we have verified that tasks are also working for our production environment, let's commit our changes and make a new minor release for our new celery feature. 
+
+```
+git add .
+git commit -m "added celery and redis"
+git checkout develop
+git merge feature-celery
+git checkout -b release-0.0.5
+git checkout master
+git merge release-0.0.5
+git tag -a 0.0.5
+git push --all
+git push --tags
+```
