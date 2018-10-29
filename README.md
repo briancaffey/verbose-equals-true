@@ -1951,3 +1951,19 @@ Let's commit our changes.
 git add .
 git commit -m "completed basic production environment"
 ```
+
+Now let's merge this branch and create a new minor release: 
+
+```
+git add .
+git commit -m "updated readme"
+git checkout develop
+git merge feature-prod
+git checkout -b release-0.0.4
+git checkout master
+git merge release-0.0.4 --no-ff
+git tag -a 0.0.4
+git push --all
+git push --tags
+```
+
