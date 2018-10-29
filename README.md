@@ -1787,3 +1787,20 @@ We can keep the changes to `REST_FRAMEWORK`. This will leave an important task f
 git add .
 git commit -m "added an api call to frontend VueJS app to list posts"
 ```
+
+## Production Environment
+
+So far we have been working on our `docker-compose.dev.yml` file that we will use for local development of our application. Let's revisit `docker-compose.yml`. This file will be used t build our production environment. Let's create a new branch called `feature-prod` where we will make changes for our production environment. Let's also merge our current branch, `feature-vue` and create a new minor release. 
+
+```
+git add .
+git commit -m "updated readme"
+git checkout develop
+git merge feature-vue
+git checkout -b release-0.0.3
+git checkout master
+git merge release-0.0.3 --no-ff
+git tag -a 0.0.3
+git push --all
+git push --tags
+```
