@@ -1662,3 +1662,128 @@ Let's commit our changes:
 git add .
 git commit -m "optimized Django application by serving static files from nginx"
 ```
+
+## Connecting our backend and frontend
+
+Let's get our backend talking to our frontend. We want to make API calls from our VueJS application that will return data from our Django backend. 
+
+Let's make one correction to our `docker-compose.dev.yml` file in the `volumes` section of the `frontend` service: 
+
+```yml
+    volumes:
+      - ./frontend:/app/:ro
+      - '/app/node_modules'
+```
+
+This will make sure that `node_modules` is not overwritten when mounting files into the `frontend` container. 
+
+Let's keep this as simple as possible and simply list the `Post` objects on the front page of our VueJS application right under the VueJS logo. Also, let's remove the `HelloWorld.vue` component.
+
+To do this, we only need to add the following to the `Home.vue` file:
+
+1. a `fetchPosts` method in the `methods` section of the `script` part of the sigle-file component. 
+
+2. a `mounted` method that calls `this.fetchPosts` to load the posts when the component is mounted. 
+
+3. `data()` method that will return an object that holds `posts: []`
+
+4. String interpolation in the `template` that will display the `title` and `content` attributes of our posts. 
+
+Here's what my `Home.vue` file looks like: 
+
+**frontend/src/views/Home.vue**
+
+```html
+<template>
+  <div class="home">
+    <img alt="Vue logo" src="../assets/logo.png">
+    <h3>Posts</h3>
+    <div v-for="(post, i) in posts" :key="i">
+      <h4>{{ post.title }}</h4>
+      <p>{{ post.content }}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'home',
+  data() {
+    return {
+      posts: [],
+    };
+  },
+  mounted() {
+    this.fetchPosts();
+  },
+  methods: {
+    fetchPosts() {
+      fetch('/api/posts/', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((json) => {
+              this.posts = json;
+            });
+          }
+        });
+    },
+  },
+};
+</script>
+```
+
+Let's go back to our `REST_FRAMEWORK` settings in `settings.py` and comment out the following lines: 
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+Now when we load the Vue app, we should see an error saying: 
+
+```
+GET http://localhost:8001/api/posts/ 401 (Unauthorized)
+```
+
+This means that our request is getting to the backend, but since we are not passing a JWT with the header of the request, we are getting a `401 Unauthorized` status code.
+
+Let's override the default settings by changing the `PostList` view:
+
+**backend/posts/views.py**
+
+```python
+from rest_framework.decorators import (
+    authentication_classes,
+    permission_classes
+)
+
+...
+
+class PostList(generics.ListAPIView):
+    authentication_classes = ()
+    permission_classes = ()
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+```
+
+When we save `views.py`, we should see the posts displayed in the VueJS app. Let's remove these changes from `views.py` as they would break our tests. 
+
+We can keep the changes to `REST_FRAMEWORK`. This will leave an important task for us to handle later: adding authentication to our VueJS applicatoin. Let's commit these changes. 
+
+```
+git add .
+git commit -m "added an api call to frontend VueJS app to list posts"
+```
