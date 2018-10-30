@@ -12,6 +12,7 @@
   "dependencies": {
     "element-ui":"^2.4.8",
     "axios":"^0.17.1",
+    "faker": "^4.1.0",
     "normalize.css": "8.0.0",
     "register-service-worker": "^1.0.0",
     "vue": "^2.5.17",
