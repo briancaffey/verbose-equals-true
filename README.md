@@ -2829,6 +2829,35 @@ Add `state.status = ""` to `AUTH_LOGOUT`:
   }
 ```
 
+### `src/utils/api.js`
+
+Replace the mock API call with our own API to the Django backend using `axios`. Here we also add an interceptor so that each request attaches the token to it's header before it is sent:
+
+```es6
+import axios from 'axios';
+import store from '../store';
+
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
+const apiCall = axios.create();
+
+apiCall.interceptors.request.use(
+  config => {
+    // Do something before each request is sent
+    if (store.getters.token) {
+      // Attach a token to the header
+      config.headers['JWT'] = store.token
+    }
+    return config
+  },
+  error => {
+    // Do something with the request error
+    Promise.reject(error)
+  }
+)
+
+export default apiCall;
+```
+
 At this point we can commit our changes: 
 
 ```
