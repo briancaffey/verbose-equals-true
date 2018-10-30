@@ -2609,3 +2609,230 @@ There's a lot to unpack with this authentication system, so I won't cover every 
 
 Once you have replicated this project in you local machine, make sure that you can log in and log out. Also, open up the `Application` tab in the Chrome developer console and verify that we are saving the mock token to local storage. 
 
+Let's pause here and commit our changes. 
+
+```
+git add .
+git commit -m "added mock authentication example from sqreen.io"
+```
+
+## Replace mock login API with Django API
+
+Now that we have a functioning mock login system, let's think about what we need to do in order to use the JWT auth system we made previously in Django. 
+
+We will want to:
+
+- Replace `apiCall` in `src/utils/api.js` with a `POST` request using `axios`
+- Add a protected `/posts` route that we will only be able to see if we are logged in.
+
+### axios
+
+First, let's import axios in `api.js` and create an axios instance: 
+
+```es6
+import axios from 'axios';
+
+// create an axios instance
+const service = axios.create({
+  baseURL: 'localhost',
+})
+```
+
+Next we want to add a request interceptor to `service` that will add our token to the request header (if a token exists) before each request is sent out. Here's an example from axios's [github page](https://github.com/axios/axios): 
+
+```es6
+// Add a request interceptor
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+```
+
+In our code, we can add the following: 
+
+```es6
+import axios from 'axios';
+import store from '../store';
+
+const apiCall = axios.create({
+  baseURL: 'localhost',
+});
+
+// request interceptor
+apiCall.interceptors.request.use(
+  config => {
+    // Do something before each request is sent
+    if (store.getters.token) {
+      // Attach a token to the header
+      config.headers['JWT'] = store.token
+    }
+    return config
+  },
+  error => {
+    // Do something with the request error
+    Promise.reject(error)
+  }
+)
+
+export default apiCall
+```
+
+Now let's use this new `apiCall`. When a user logs in, the login form calls the `login` method. This dispatches `AUTH_REQUEST`. Here's our new `AUTH_REQUEST` in `src/store/modules/auth.js` (with comments):
+
+```es6
+  [AUTH_REQUEST]: ({commit, dispatch}, user) => { //define `AUTH_REQUEST` action
+    return new Promise((resolve, reject) => { // return a Promise
+      commit(AUTH_REQUEST) // commit `AUTH_REQUEST` mutation; displays the Loading spinner or message
+      apiCall.post( // use our new apiCall 
+        '/api/auth/obtain_token/', // the login endpoint for our Django backend
+        user // this contains { username: "admin", password: "password" }, our form data
+      )
+      .then(resp => { // response comes back from the backend
+        // console.log(resp); // log the output of the response for debuging
+        localStorage.setItem('user-token', resp.data.token) // save the token returned in the response to localStorage
+        commit(AUTH_SUCCESS, resp) // remove the loading spinner, save the token to our store
+        dispatch(USER_REQUEST) // get the logged in user's profile information
+        resolve(resp) // resolve the promise
+      })
+      .catch(err => { // handle a bad request
+        // console.log("Incorrect username/password"); // handle a bad password 
+        console.log(err.status); // log the repsonse
+        commit(AUTH_ERROR, err) // set auth status to error
+        localStorage.removeItem('user-token') // remove `user-token` from localStorage
+        reject(err) // reject the promise
+      })
+    })
+  },
+```
+
+Our login form doesn't show any message if we submit an invalid username/password combination, so we will have to handle this later. 
+
+One other things to mention is that we have not implemented a user profile, so we don't have anything for `USER_REQUEST`. Recall that `USER_REQUEST` originally made a mock request to get user profile data. We can keep this mocked for now with this:
+
+```es6
+const actions = {
+  [USER_REQUEST]: ({commit, dispatch}) => {
+    commit(USER_SUCCESS, {"name":"Brian", "title":"Admin"})
+    // apiCall({url: 'user/me'})
+    //   .then(resp => {
+    //     commit(USER_SUCCESS, resp)
+    //   })
+    //   .catch(resp => {
+    //     commit(USER_ERROR)
+    //     // if resp is unauthorized, logout, to
+    //     dispatch(AUTH_LOGOUT)
+    //   })
+  },
+}
+```
+
+We can come back to this once we implement a user profile. Let's review the changes we made to sqreen.io authentication implementation. We have changed five files: 
+
+- `src/components/login/index.vue`
+- `src/components/navigation/index.vue`
+- `src/store/modules/auth.js`
+- `src/store/modules/users.js`
+- `src/utils/api.js`
+
+### `src/components/login/index.vue` (1 area to change)
+
+Change `data` to default to `admin`/`password` for the login form: 
+
+```es6
+    data () {
+      return {
+        username: 'admin',
+        password: 'password',
+      }
+    },
+```
+
+### `src/components/navigation/index.vue` (2 areas to change)
+
+Remove `{{ name }}` from the template. I have replaced it with `Welcome`: 
+
+```html
+      <li v-if="isProfileLoaded">
+        <router-link to="/account">Welcome</router-link>
+      </li>
+```
+
+Remove `name` from computed properties: 
+
+```es6
+    computed: {
+      ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
+      ...mapState({
+        authLoading: state => state.auth.status === 'loading',
+        // name: state => `${state.user.profile.title} ${state.user.profile.name}`,
+      })
+    },
+```
+
+### `src/store/modules/auth.js` (3 areas to change)
+
+Replace the original `apiCall` with our new call to the Django backend:
+
+```es6
+      apiCall.post(
+        '/api/auth/obtain_token/',
+        user
+      )
+```
+
+When we set `localStorage`, set the token to `resp.data.token`, not `resp.token`: 
+
+```es6
+        localStorage.setItem('user-token', resp.data.token)
+```
+
+Similarly, in `AUTH_SUCCESS`, set token in our state to `resp.data.token`, not `resp.token`:
+
+```es6
+  [AUTH_SUCCESS]: (state, resp) => {
+    state.status = 'success'
+    state.token = resp.data.token
+    state.hasLoadedOnce = true
+  },
+```
+
+### `src/store/modules/users.js` (2 areas to change)
+
+Remove the `apiCall` from the `USER_ACTION`, commit the `USER_SUCCESS` *mutation* with mock data and comment out the rest of the function: 
+
+```es6
+const actions = {
+  [USER_REQUEST]: ({commit, dispatch}) => {
+    commit(USER_SUCCESS, {"name":"User", "title":"Admin"})
+    // apiCall({url: 'user/me'})
+    //   .then(resp => {
+    //     commit(USER_SUCCESS, resp)
+    //   })
+    //   .catch(resp => {
+    //     commit(USER_ERROR)
+    //     // if resp is unauthorized, logout, to
+    //     dispatch(AUTH_LOGOUT)
+    //   })
+  },
+}
+```
+
+Add `state.status = ""` to `AUTH_LOGOUT`: 
+
+```es6
+  [AUTH_LOGOUT]: (state) => {
+    state.profile = {},
+    state.status = ""
+  }
+```
+
+At this point we can commit our changes: 
+
+```
+git add .
+git commit -m "integrated our own backend into the sqreen.io authentication example"
+```
+

@@ -1,16 +1,22 @@
-const mocks = {
-  auth: { POST: { token: 'This-is-a-mocked-token' } },
-  'user/me': { GET: { name: 'doggo', title: 'sir' } },
-};
+import axios from 'axios';
+import store from '../store';
+
 /* eslint no-unused-vars: ["error", { "args": "none" }] */
-const apiCall = ({ url, method, ...args }) => new Promise((resolve, reject) => { // no-unused-vars
-  setTimeout(() => {
-    try {
-      resolve(mocks[url][method || 'GET']);
-    } catch (err) {
-      reject(new Error(err));
+const apiCall = axios.create();
+
+apiCall.interceptors.request.use(
+  config => {
+    // Do something before each request is sent
+    if (store.getters.token) {
+      // Attach a token to the header
+      config.headers['JWT'] = store.token
     }
-  }, 1000);
-});
+    return config
+  },
+  error => {
+    // Do something with the request error
+    Promise.reject(error)
+  }
+)
 
 export default apiCall;

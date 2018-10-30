@@ -9,7 +9,7 @@
     </ul>
     <ul>
       <li v-if="isProfileLoaded">
-        <router-link to="/account">{{name}}</router-link>
+        <router-link to="/account">Welcome</router-link>
       </li>
       <li v-if="isAuthenticated" @click="logout">
         <span class="logout">Logout</span>
@@ -71,7 +71,7 @@
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
       ...mapState({
         authLoading: state => state.auth.status === 'loading',
-        name: state => `${state.user.profile.title} ${state.user.profile.name}`,
+        // name: state => `${state.user.profile.title} ${state.user.profile.name}`,
       })
     },
   }
