@@ -11,6 +11,9 @@
       <li v-if="isProfileLoaded">
         <router-link to="/account">Welcome</router-link>
       </li>
+      <li v-if="isAuthenticated">
+        <router-link to="/posts">Posts</router-link>
+      </li>
       <li v-if="isAuthenticated" @click="logout">
         <span class="logout">Logout</span>
       </li>

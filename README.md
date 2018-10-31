@@ -2865,3 +2865,131 @@ git add .
 git commit -m "integrated our own backend into the sqreen.io authentication example"
 ```
 
+## Accessing Posts from the VueJS frontend
+
+Now that we have our authentication system in place, we should be able to make requests to protected routes. Let's replace the mock data with `Posts` from our backend.
+
+Let's leave the `fakeFeed` in place for now, and add another tab to the navigation bar that is only visible when the user is logged in. This tab will display a list of our Posts. 
+
+To do this, we will need to do the following: 
+
+- Add a link to `Posts` in the `navigation` component with a `v-if` directive that is true when the user is logged in
+- Modify our existing `Post` component that will fetch posts from our backend and display them with our new `apiCall`
+- Add a `getter` method called `getToken` to `src/store/modules/auth.js`
+- Add a route that will display a Posts component if the user is authenticated (and will redirect to `/login` if the)
+- Modify `apiCall` in `utils/api.js`
+
+Let's start with `src/components/navigation/index.vue`. Add a `router-link` for our posts in the second unordered list: 
+
+```html
+      <li v-if="isAuthenticated">
+        <router-link to="/posts">Posts</router-link>
+      </li>
+```
+
+This will only be displayed if the user `"isAuthenticated"`. 
+
+Now let's add a component that will display posts. In the components folder, create a file called `index.vue`: 
+
+```html
+<template>
+  <div class="home">
+    <h3>Posts</h3>
+    <div v-for="(post, i) in posts" :key="i">
+      <h4>{{ post.title }}</h4>
+      <p>{{ post.content }}</p>
+    </div>
+  </div>
+</template>
+
+<script>
+
+import apiCall from '@/utils/api';
+
+export default {
+  name: 'home',
+  data() {
+    return {
+      posts: [],
+    };
+  },
+  mounted() {
+    this.fetchPosts();
+  },
+  methods: {
+      fetchPosts(){
+          apiCall.get(
+            '/api/posts',
+            ).then(
+          resp => {
+            this.posts = resp.data
+          }
+      ).catch(err=>{
+          console.log(err);
+          console.log("Handle bad credentials here");
+      })
+    }
+  },
+};
+</script>
+```
+
+In `src/store/modules/auth.js`, add a `getToken` getter method: 
+
+```es6
+const getters = {
+  getToken: state => state.token,
+  isAuthenticated: state => !!state.token,
+  authStatus: state => state.status,
+}
+```
+
+Next, open `src/router/index.vue`, and add import the `Posts` component: 
+
+```es6
+import Posts from '../components/posts';
+```
+
+Then add a `Posts` route to the list of `routes`: 
+
+```es6
+    {
+      path: '/posts',
+      name: 'Posts',
+      component: Posts,
+      beforeEnter: ifAuthenticated,
+    },
+```
+
+This route will be similar to `/accounts`. It will redirect the use to the `/login` route if the user is noth authenticated.
+
+Finally, let's modify `apiCall` in `utils/api.js`. Use the following: 
+
+```es6
+import axios from 'axios';
+import store from '../store';
+
+/* eslint no-unused-vars: ["error", { "args": "none" }] */
+const apiCall = axios.create();
+
+apiCall.interceptors.request.use(
+  config => {
+    // Do something before each request is sent
+    if (store.getters.isAuthenticated) {
+      // Take the token from the state and attach it to the request's headers
+      config.headers.Authorization = `JWT ${store.getters.getToken}`;
+    }
+    return config
+  },
+  error => {
+    // Do something with the request error
+    Promise.reject(error)
+  }
+)
+
+export default apiCall;
+```
+
+There is still more work to do in this login section, but we will come back to this section later. 
+
+Let's commit our changes. 

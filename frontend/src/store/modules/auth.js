@@ -6,6 +6,7 @@ import apiCall from '../../utils/api.js'
 const state = { token: localStorage.getItem('user-token') || '', status: '', hasLoadedOnce: false }
 
 const getters = {
+  getToken: state => state.token,
   isAuthenticated: state => !!state.token,
   authStatus: state => state.status,
 }

@@ -1,17 +1,11 @@
 <template>
   <div>
     <div class="headline">
-      <p>Pic</p>
-      <h1>Your doge profile</h1>
+      <h1>User Profile</h1>
     </div>
     <p v-if="profile.name">
       <strong>Name:</strong> {{profile.title}} {{profile.name}}
     </p>
-        <el-date-picker
-      v-model="value1"
-      type="datetime"
-      placeholder="Select date and time">
-    </el-date-picker>
   </div>
 </template>
 

@@ -7,9 +7,9 @@ const apiCall = axios.create();
 apiCall.interceptors.request.use(
   config => {
     // Do something before each request is sent
-    if (store.getters.token) {
-      // Attach a token to the header
-      config.headers['JWT'] = store.token
+    if (store.getters.isAuthenticated) {
+      // Take the token from the state and attach it to the request's headers
+      config.headers.Authorization = `JWT ${store.getters.getToken}`;
     }
     return config
   },
