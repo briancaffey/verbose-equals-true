@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="isAuthenticated">
-      <feed-item v-for="(feed, index) in fakeFeed" :key="index" :feed="feed"/>
+      <h2>You are now logged in.</h2>
     </div>
     <div v-if="!isAuthenticated && authStatus !== 'loading'">
       <h1>Welcome</h1>
@@ -20,15 +20,12 @@
 </style>
 
 <script>
-  import fakeFeed from './fakeFeed';
-  import FeedItem from './feedItem.vue';
   import { mapGetters } from 'vuex';
   import Login from '@/components/login/index.vue';
 
   export default {
     components: {
       Login,
-      FeedItem
     },
     name: 'home',
     computed: {
@@ -36,9 +33,6 @@
       loading: function () {
         return this.authStatus === 'loading' && !this.isAuthenticated
       }
-    },
-    data () {
-      return ({ fakeFeed })
     },
   }
 </script>

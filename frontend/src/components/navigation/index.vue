@@ -58,7 +58,8 @@
     name: 'navigation',
     methods: {
       logout: function () {
-        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'))
+        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'));
+        location.reload();
       }
     },
     computed: {
