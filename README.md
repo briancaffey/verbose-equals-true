@@ -2993,3 +2993,9 @@ export default apiCall;
 There is still more work to do in this login section, but we will come back to this section later. 
 
 Let's commit our changes. 
+
+```
+git add .
+git commit -m "enabled posts from backend to be accessed from the Vue frontend"
+```
+
