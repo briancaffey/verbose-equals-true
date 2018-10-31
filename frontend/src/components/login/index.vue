@@ -1,19 +1,23 @@
 <template>
   <div>
-    <form class="login" @submit.prevent="login">
-      <h1>Sign in</h1>
-      <label>User name</label>
-      <input required v-model="username" type="text" placeholder="Snoopy"/>
-      <label>Password</label>
-      <input required v-model="password" type="password" placeholder="Password"/>
-      <hr/>
-      <button type="submit">Login</button>
-    </form>
+    <h1>Sign In</h1>
+    <el-form v-loading="loading">
+      <el-input :value="username"></el-input>
+      <el-input type="password" :value="password"></el-input>
+      <el-button
+        style="float: right;"
+        type="primary"
+        @click.native.prevent="login"
+      >
+        Login
+      </el-button>
+    </el-form>
   </div>
 </template>
 
 <script>
   import {AUTH_REQUEST} from '@/store/actions/auth'
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'login',
@@ -31,6 +35,12 @@
         })
       }
     },
+    computed: {
+      ...mapGetters(['isAuthenticated', 'authStatus']),
+      loading: function () {
+        return this.authStatus === 'loading' && !this.isAuthenticated
+      }
+    }
   }
 </script>
 
@@ -40,5 +50,8 @@
     flex-direction: column;
     width: 300px;
     padding: 10px;
+  }
+  .el-input {
+    margin-bottom: 5px;
   }
 </style>

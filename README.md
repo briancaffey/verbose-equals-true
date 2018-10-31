@@ -2999,3 +2999,119 @@ git add .
 git commit -m "enabled posts from backend to be accessed from the Vue frontend"
 ```
 
+## Using Element UI
+
+At this point let's use some Element UI components to improve the navbar, login form and posts list. 
+
+For the navbar, let's use the `NavMenu` component. Replace our navigation bar with this code: 
+
+```html
+<template>
+  <div>
+    <el-menu
+      :router="true"
+      class="el-menu-demo"
+      mode="horizontal"
+    >
+      <el-menu-item
+        route="/"
+        index="home"
+      >
+      Home
+      </el-menu-item>
+      <el-menu-item
+        v-if="isAuthenticated"
+        index="account"
+        route="/account"
+      >
+      Account
+      </el-menu-item>
+      <el-menu-item
+        v-if="isAuthenticated"
+        index="posts"
+        route="/posts"
+      >
+      Posts
+      </el-menu-item>
+      <el-menu-item
+        route="/logout"
+        index="logout"
+        @click="logout"
+        style="float:right;"
+        v-if="isAuthenticated"
+      >
+      Logout
+      </el-menu-item>
+      <el-menu-item
+        index="login"
+        route="/login"
+        style="float: right;"
+        v-if="!isAuthenticated && !authLoading"
+      >
+      Login
+      </el-menu-item>
+    </el-menu>
+  </div>
+</template>
+```
+
+Next, let's use `el-form` component to replace our login form in `components/login/index.vue`:
+
+```html
+<template>
+  <div>
+    <h1>Sign In</h1>
+    <el-form v-loading="loading">
+      <el-input :value="username"></el-input>
+      <el-input type="password" :value="password"></el-input>
+      <el-button
+        style="float: right;"
+        type="primary"
+        @click.native.prevent="login"
+      >
+        Login
+      </el-button>
+    </el-form>
+  </div>
+</template>
+```
+
+We also need to import `mapGetters` from `vuex`: 
+
+```es6
+  import { mapGetters } from 'vuex';
+```
+
+Finally, add the following `computed` property that will make use of `mapGetters`: 
+
+```es6
+    computed: {
+      ...mapGetters(['isAuthenticated', 'authStatus']),
+      loading: function () {
+        return this.authStatus === 'loading' && !this.isAuthenticated
+      }
+    }
+```
+
+For styling, add the following to the end of `components/login/index.vue`: 
+
+```html
+<style>
+  .login {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    padding: 10px;
+  }
+  .el-input {
+    margin-bottom: 5px;
+  }
+</style>
+```
+
+Let's commit our changes: 
+
+```
+git add .
+git commit -m "used element UI componenets for navigation and form"
+```

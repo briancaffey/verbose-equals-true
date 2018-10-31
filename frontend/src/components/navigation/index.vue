@@ -1,61 +1,52 @@
 <template>
-  <div class="navigation">
-    <ul>
-      <li>
-        <router-link class="brand" to="/">
-         Logo!
-        </router-link>
-      </li>
-    </ul>
-    <ul>
-      <li v-if="isProfileLoaded">
-        <router-link to="/account">Welcome</router-link>
-      </li>
-      <li v-if="isAuthenticated">
-        <router-link to="/posts">Posts</router-link>
-      </li>
-      <li v-if="isAuthenticated" @click="logout">
-        <span class="logout">Logout</span>
-      </li>
-      <li v-if="!isAuthenticated && !authLoading">
-        <router-link to="/login">Login</router-link>
-      </li>
-    </ul>
+  <div>
+    <el-menu
+      :router="true"
+      class="el-menu-demo"
+      mode="horizontal"
+    >
+      <el-menu-item
+        route="/"
+        index="home"
+      >
+      Home
+      </el-menu-item>
+      <el-menu-item
+        v-if="isAuthenticated"
+        index="account"
+        route="/account"
+      >
+      Account
+      </el-menu-item>
+      <el-menu-item
+        v-if="isAuthenticated"
+        index="posts"
+        route="/posts"
+      >
+      Posts
+      </el-menu-item>
+      <el-menu-item
+        route="/logout"
+        index="logout"
+        @click="logout"
+        style="float:right;"
+        v-if="isAuthenticated"
+      >
+      Logout
+      </el-menu-item>
+      <el-menu-item
+        index="login"
+        route="/login"
+        style="float: right;"
+        v-if="!isAuthenticated && !authLoading"
+      >
+      Login
+      </el-menu-item>
+    </el-menu>
   </div>
 </template>
 
-<style lang="scss" scoped>
-  a {
-    color: white;
-    text-decoration: none;
-  }
-  .navigation {
-    display: flex;
-    color: white;
-    align-items: center;
-    background-color: #ffa035;
-    padding: 5px;
-
-    ul{
-      display: flex;
-      &:first-child{
-        flex-grow: 1;
-      }
-      li {
-        padding-right: 1em;
-      }
-    }
-  }
-  .brand {
-    display: flex;
-    align-items: center;
-
-  }
-  .logout {
-    &:hover {
-      cursor: pointer;
-    }
-  }
+<style scoped>
 
 </style>
 
@@ -74,7 +65,6 @@
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
       ...mapState({
         authLoading: state => state.auth.status === 'loading',
-        // name: state => `${state.user.profile.title} ${state.user.profile.name}`,
       })
     },
   }

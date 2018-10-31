@@ -1,12 +1,11 @@
 <template>
   <div>
-    <loading v-if="loading"/>
     <div v-if="isAuthenticated">
       <feed-item v-for="(feed, index) in fakeFeed" :key="index" :feed="feed"/>
     </div>
     <div v-if="!isAuthenticated && authStatus !== 'loading'">
-      <h1>Welcome to DogeBook !</h1>
-      <p>When meeting new doge friends is harder than ever, Dogebook closes the gap between all paws in the world</p>
+      <h1>Welcome</h1>
+      <p>Please login</p>
       <login/>
     </div>
   </div>
