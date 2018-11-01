@@ -3117,3 +3117,10 @@ git commit -m "used element UI componenets for navigation and form"
 ```
 
 ## Frontend Cleanup
+
+Let's clean up the frontend by removing `fakeFeed` and `feedItem`, and removing the `footer` componenet. 
+
+```
+git add .
+git commit -m "cleanup frontend"
+```
