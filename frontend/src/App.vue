@@ -6,18 +6,15 @@
         <router-view/>
       </center-container>
     </div>
-    <sqreen-footer/>
   </div>
 </template>
 
 <script>
 import Navigation from '@/components/navigation'
 import { USER_REQUEST } from '@/store/actions/user'
-import SqreenFooter from '@/components/footer/index.vue'
 
 export default {
   components: {
-    SqreenFooter,
     Navigation },
   name: 'app',
   created: function () {

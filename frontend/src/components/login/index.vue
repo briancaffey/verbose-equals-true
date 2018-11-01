@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="login">
     <h1>Sign In</h1>
     <el-form v-loading="loading">
       <el-input :value="username"></el-input>

@@ -4,6 +4,7 @@
       :router="true"
       class="el-menu-demo"
       mode="horizontal"
+      :default-active="activeIndex"
     >
       <el-menu-item
         route="/"
@@ -25,8 +26,25 @@
       >
       Posts
       </el-menu-item>
+      <el-submenu
+        index="4"
+        v-if="isAuthenticated">
+        <template slot="title">Mock</template>
+        <el-menu-item
+          v-if="isAuthenticated"
+          index="4-1"
+          route="/mock/price-comparison">
+          Price Comparison
+        </el-menu-item>
+        <el-menu-item
+          v-if="isAuthenticated"
+          index="4-2"
+          route="/mock/file-upload">
+          File Upload
+        </el-menu-item>
+      </el-submenu>
       <el-menu-item
-        route="/logout"
+        route="/"
         index="logout"
         @click="logout"
         style="float:right;"
@@ -56,10 +74,15 @@
 
   export default {
     name: 'navigation',
+    data() {
+      return {
+        activeIndex: "home"
+      }
+    },
     methods: {
       logout: function () {
-        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'));
-        location.reload();
+        this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/'));
+        this.activeIndex = "home"
       }
     },
     computed: {
