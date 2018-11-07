@@ -10,6 +10,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import Navigation from '@/components/navigation'
 import { USER_REQUEST } from '@/store/actions/user'
 

@@ -20,6 +20,7 @@
 </style>
 
 <script>
+/* eslint-disable */
   import { mapGetters } from 'vuex';
   import Login from '@/components/login/index.vue';
 

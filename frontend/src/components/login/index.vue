@@ -16,6 +16,7 @@
 </template>
 
 <script>
+/* eslint-disable */
   import {AUTH_REQUEST} from '@/store/actions/auth'
   import { mapGetters } from 'vuex';
 
