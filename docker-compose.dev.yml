@@ -73,7 +73,7 @@ services:
 
   portainer:
     image: portainer/portainer
-    container_name: portainer
+    container_name: portainer_dev_vet
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
