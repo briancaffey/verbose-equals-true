@@ -44,7 +44,7 @@ services:
       context: .
       dockerfile: nginx/dev/Dockerfile
     ports:
-      - "8001:80"
+      - "80:80"
     depends_on:
       - backend
     volumes:
