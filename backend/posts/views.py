@@ -16,6 +16,7 @@ from rest_framework.decorators import (
 class PostList(generics.ListAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    page_size = 10
 
 
 class PostDetail(generics.RetrieveAPIView):

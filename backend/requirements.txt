@@ -4,6 +4,7 @@ Django==2.1
 djangorestframework
 django-filter
 djangorestframework-jwt
+factory_boy
 flake8==3.6
 gunicorn==19.8
 psycopg2==2.7

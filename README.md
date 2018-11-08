@@ -3124,3 +3124,136 @@ Let's clean up the frontend by removing `fakeFeed` and `feedItem`, and removing 
 git add .
 git commit -m "cleanup frontend"
 ```
+
+## Paginated Tables
+
+Let's create some fake `Post` objects by seeding our database like we did with our default user. Once we create these posts, let's display them in a table on our Frontend with pagination. 
+
+### Sedding post data
+
+Add the `factory` python package so we can easily create some fake data. Add the following to `requirements.txt`: 
+
+```python
+factory_boy
+```
+
+Now let's crate a management command in the `posts` app: 
+
+**bakend/posts/management/commands/create_posts.py**
+
+```python
+from posts.models import Post
+from django.core.management.base import BaseCommand
+
+import factory
+
+
+class PostFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Post
+    title = factory.Faker('name')
+    content = factory.Faker('bs')
+
+
+class Command(BaseCommand):
+    help = 'Creates dummy Posts to seed the database'
+
+    def handle(self, *args, **options):
+        posts = Post.objects.all()
+        if not posts:
+            for i in range(1000):
+                post = PostFactory()
+                post.save()
+            print("Created posts")
+        else:
+            print("Not creating posts")
+```
+
+Now let's add this command to `start_dev.sh`: 
+
+```bash
+#!/bin/bash
+
+cd backend
+python3 manage.py collectstatic --no-input
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py create_default_user
+python3 manage.py create_posts
+python3 manage.py runserver 0.0.0.0:8000
+```
+
+Let's temporarily comment out all of the `REST_FRAMEWORK` permissions and authentication classes: 
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+```
+
+Let's take a look at the `/api/posts` endpoint. We see all 1000 posts when we make a get request to this endpoint. Let's paginate the data so we only see 10 posts at a time. 
+
+We have a few options for how to set pagination. One way is to add another variable to our settings: 
+
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+    ...
+}
+```
+
+When add this setting, notice that the JSON returned for our `api/posts` endpoint has a different structure: 
+
+```json
+HTTP 200 OK
+Allow: GET, HEAD, OPTIONS
+Content-Type: application/json
+Vary: Accept
+
+{
+    "count": 1000,
+    "next": "http://localhost/api/posts/?limit=10&offset=10",
+    "previous": null,
+    "results": [
+        {
+            "id": 1001,
+            "title": "Felicia Williams",
+            "content": "enable efficient ROI",
+            "created_at": "2018-11-08T04:00:48.625367Z",
+            "updated_at": "2018-11-08T04:00:48.630452Z"
+        },
+        {
+            "id": 1002,
+            "title": "Linda Wood",
+            "content": "monetize bleeding-edge platforms",
+            "created_at": "2018-11-08T04:00:48.633576Z",
+            "updated_at": "2018-11-08T04:00:48.635499Z"
+        },
+        ...
+    ]
+}
+```
+
+We won't see anything on our `/posts` route in the Vue app because we are trying to iterate over the returned data, which is no longer an array. Instead we need to iterate over `results`.
+
+We need to change
+
+```es6
+this.posts = resp.data
+```
+
+to 
+
+```es6
+this.posts = resp.data.results
+```
+
+Now we should see the posts listed. Next let's put our posts into a table. 
