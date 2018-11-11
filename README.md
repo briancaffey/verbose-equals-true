@@ -3257,3 +3257,5 @@ this.posts = resp.data.results
 ```
 
 Now we should see the posts listed. Next let's put our posts into a table. 
+
+We can use the `<el-table />` component from Element UI. 

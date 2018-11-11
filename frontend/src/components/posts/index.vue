@@ -2,12 +2,12 @@
   <div class="home">
     <h3>Posts</h3>
     <el-table
-      v-loading="loading"
-      fit
-      stripe
       border
-      :data="posts"
+      fit
       max-height="500"
+      stripe
+      v-loading="loading"
+      :data="posts"
       style="width: 100%">
       <el-table-column
         class="selection-col"
@@ -15,10 +15,10 @@
         type="selection">
       </el-table-column>
       <el-table-column
-        sortable
         fixed="left"
-        prop="id"
         label="ID"
+        prop="id"
+        sortable
         width="100">
           <template slot-scope="scope">
             <el-button>
@@ -27,50 +27,48 @@
           </template>
       </el-table-column>
       <el-table-column
-        sortable
-        prop="title"
         label="Title"
-        min-width="100"
+        prop="title"
         max-width="400"
-        >
+        min-width="100"
+        sortable>
       </el-table-column>
       <el-table-column
-        sortable
-        prop="content"
+        fit
         label="Content"
-        fit>
+        prop="content"
+        sortable>
       </el-table-column>
       <el-table-column
-        sortable
-        prop="created_at"
+        fit
         label="Create On"
-        fit>
+        prop="created_at"
+        sortable>
       </el-table-column>
       <el-table-column
         fixed="right"
         label="Actions"
         prop="id"
-        width="180"
-        >
+        width="180">
         <template slot-scope="scope">
           <div class="actions">
-
-          <el-button
-            icon="el-icon-edit"
-            type="primary"
-            @click="handleEdit(scope.row.id)">
-          </el-button>
-          <el-button
-            type="danger"
-            icon="el-icon-delete">
-          </el-button>
+            <el-button
+              @click="handleEdit(scope.row.id)"
+              icon="el-icon-edit"
+              type="primary">
+            </el-button>
+            <el-button
+              @click="handleDelete(scope.row.id)"
+              icon="el-icon-delete"
+              type="danger">
+            </el-button>
           </div>
         </template>
       </el-table-column>
     </el-table>
     <el-pagination
-      class="pagination"
       background
+      class="pagination"
       @current-change="change_page"
       :current-page.sync="listQuery.page"
       layout="prev, pager, next"
@@ -146,3 +144,4 @@ export default {
   text-align: center;
 }
 </style>
+
