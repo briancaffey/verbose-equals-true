@@ -7,10 +7,14 @@ import store from './store';
 import './registerServiceWorker';
 import Loading from './components/lib/loading';
 import CenterContainer from './components/lib/center-container';
-import locale from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale/lang/en';
+import VueGridLayout from 'vue-grid-layout';
+import HighchartsVue from 'highcharts-vue';
 
 Vue.use(ElementUI, { locale })
 Vue.use(ElementUI);
+Vue.use(VueGridLayout);
+Vue.use(HighchartsVue);
 
 Vue.component('loading', Loading);
 Vue.component('center-container', CenterContainer);

@@ -42,6 +42,12 @@
           route="/mock/file-upload">
           File Upload
         </el-menu-item>
+        <el-menu-item
+          v-if="isAuthenticated"
+          index="4-2"
+          route="/mock/grid-layout-test">
+          Vue Grid Layout Test
+        </el-menu-item>
       </el-submenu>
       <el-menu-item
         route="/"
