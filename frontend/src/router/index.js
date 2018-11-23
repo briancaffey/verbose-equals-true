@@ -7,6 +7,7 @@ import Account from '../components/account'
 import Login from '../components/login'
 import store from '../store'
 import Posts from '../components/posts';
+import Debug from '../components/debug';
 
 Vue.use(Router)
 
@@ -52,5 +53,11 @@ export default new Router({
       component: Login,
       beforeEnter: ifNotAuthenticated,
     },
+    {
+      path: '/debug',
+      name: 'debug',
+      component: Debug,
+      beforeEnter: ifAuthenticated,
+    }
   ],
 })

@@ -4,42 +4,38 @@
       :router="true"
       class="el-menu-demo"
       mode="horizontal"
-      :default-active="activeIndex"
-    >
+      :default-active="activeIndex">
       <el-menu-item
         route="/"
-        index="home"
-      >
+        index="home">
       Home
       </el-menu-item>
       <el-menu-item
         v-if="isAuthenticated"
         index="account"
-        route="/account"
-      >
+        route="/account">
       Account
       </el-menu-item>
       <el-menu-item
         v-if="isAuthenticated"
         index="posts"
-        route="/posts"
-      >
+        route="/posts">
       Posts
       </el-menu-item>
       <el-submenu
         index="4"
         v-if="isAuthenticated">
-        <template slot="title">Mock</template>
+        <template slot="title">Files</template>
         <el-menu-item
           v-if="isAuthenticated"
-          index="4-1"
-          route="/mock/price-comparison">
-          Price Comparison
+          index="4-1    "
+          route="/files">
+          All Files
         </el-menu-item>
         <el-menu-item
           v-if="isAuthenticated"
           index="4-2"
-          route="/mock/file-upload">
+          route="/files/upload">
           File Upload
         </el-menu-item>
       </el-submenu>
@@ -48,17 +44,22 @@
         index="logout"
         @click="logout"
         style="float:right;"
-        v-if="isAuthenticated"
-      >
+        v-if="isAuthenticated">
       Logout
       </el-menu-item>
       <el-menu-item
         index="login"
         route="/login"
         style="float: right;"
-        v-if="!isAuthenticated && !authLoading"
-      >
+        v-if="!isAuthenticated && !authLoading">
       Login
+      </el-menu-item>
+      <el-menu-item
+        index="debug"
+        route="/debug"
+        style="float: right;"
+        v-if="isAuthenticated">
+        Debug
       </el-menu-item>
     </el-menu>
   </div>
