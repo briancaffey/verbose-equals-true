@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   db:
     container_name: db_dev_vet
     image: postgres
@@ -13,7 +14,7 @@ services:
     command: /start_dev.sh
     volumes:
       - .:/code
-      - django-static:/backend/static
+      - django-static:/code/backend/static
     ports:
       - "8000:8000"
     networks:
@@ -47,6 +48,8 @@ services:
       - "80:80"
     depends_on:
       - backend
+      - frontend
+      - flower
     volumes:
       - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
       - django-static:/usr/src/app/static
@@ -62,7 +65,7 @@ services:
   celery:
     build: ./backend
     container_name: celery_dev_vet
-    command: bash -c 'celery worker --app=backend.celery_app:app --loglevel=info'
+    command: bash -c 'python3 manage.py watch_celery'
     volumes:
       - ./backend:/code
     depends_on:
@@ -70,6 +73,21 @@ services:
       - redis
     networks:
       - main
+
+  flower:  
+    image: mher/flower
+    container_name: flower_dev_vet
+    command: flower --url_prefix=flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLOWER_PORT=5555
+    ports:  
+      - 5555:5555
+    networks:
+      - main
+    depends_on:
+      - celery
+      - redis
 
   portainer:
     image: portainer/portainer
@@ -79,6 +97,8 @@ services:
       - portainer-data:/data
     ports:
       - 9000:9000
+    networks:
+      - main
 
 volumes:
   django-static:

@@ -14,7 +14,8 @@
 
 
 <script>
-  export default {
-    name: 'center-container',
-  }
+/* eslint-disable */
+export default {
+name: 'center-container',
+}
 </script>

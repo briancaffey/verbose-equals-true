@@ -1,4 +1,4 @@
-/* eslint-disable promise/param-names */
+/* eslint-disable */
 import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT } from '../actions/auth'
 import { USER_REQUEST } from '../actions/user'
 import apiCall from '../../utils/api.js'

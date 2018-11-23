@@ -22,7 +22,8 @@
 </style>
 
 <script>
-  import { mapState } from 'vuex'
+/* eslint-disable */
+import { mapState } from 'vuex'
 
 export default {
     name: 'account',

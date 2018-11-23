@@ -1,7 +1,8 @@
+/* eslint-disable */
+
 import axios from 'axios';
 import store from '../store';
 
-/* eslint no-unused-vars: ["error", { "args": "none" }] */
 const apiCall = axios.create();
 
 apiCall.interceptors.request.use(

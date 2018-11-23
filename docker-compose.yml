@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   db:
     container_name: db_prod_vet
     image: postgres
@@ -54,6 +55,21 @@ services:
     networks:
       - main
 
+  flower:
+    image: mher/flower
+    container_name: flower_prod_vet
+    command: flower --url_prefix=flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLOWER_PORT=5555
+    ports:  
+      - 5555:5555
+    networks:
+      - main
+    depends_on:
+      - celery
+      - redis
+
   portainer:
     image: portainer/portainer
     container_name: portainer
@@ -62,6 +78,8 @@ services:
       - portainer-data:/data
     ports:
       - 9000:9000
+    networks:
+      - main
 
 volumes:
   django-static:
