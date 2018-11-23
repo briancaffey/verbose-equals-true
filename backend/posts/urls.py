@@ -1,9 +1,16 @@
-from django.urls import path
-
 from . import views
+from django.urls import path
+from rest_framework import routers
 
+router = routers.SimpleRouter()
+router.register(r'', views.PostViewSet)
+
+# the router will match this /posts first
+# TODO: combine ViewSet with customized list view
 urlpatterns = [
     path('', views.PostList.as_view(), name='posts'),
-    path('<int:pk>/', views.PostDetail.as_view(), name='post-detail'),
-    path('celery-test/', views.celery_test_view, name='celery-test'),
 ]
+# registers list, create, retrieve, update, partial_update
+# and destroy
+# https://www.django-rest-framework.org/api-guide/routers/#simplerouter
+urlpatterns += router.urls
