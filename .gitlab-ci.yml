@@ -3,7 +3,9 @@
 image: python:3.6
 
 stages:
+  - lint
   - test
+  - coverage
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -21,23 +23,26 @@ cache:
   - ~/.cache/pip/
 
 before_script:
-  - pip install -r backend/requirements.txt
+  - cd backend && pip install -r backend/requirements.txt
 
-runtest:
+
+lint:
+  stage: lint
+  variables:
+    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
+  script:
+    - flake8
+
+test:
   stage: test
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
   script:
-  - python3 backend/manage.py test --settings backend.settings-gitlab-ci
-  - flake8 backend
-  - cd backend
-  - coverage run --source='.' manage.py test --settings backend.settings-gitlab-ci
-  - coverage report
+  - python manage.py test --settings backend.settings-gitlab-ci
 
 coverage:
-  stage: test
+  stage: coverage
   script:
-    - cd backend
     - coverage run --source='.' manage.py test --settings backend.settings-gitlab-ci
     - coverage report -m
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
