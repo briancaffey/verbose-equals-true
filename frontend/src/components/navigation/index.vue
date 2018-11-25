@@ -8,19 +8,41 @@
       <el-menu-item
         route="/"
         index="home">
-      Home
+        Home
       </el-menu-item>
+      <el-submenu
+        index="1">
+        <template
+          slot="title">
+          About
+        </template>
+        <el-menu-item
+          route='/about'
+          index='about'>
+          What is this project?
+        </el-menu-item>
+        <el-menu-item
+          route='/about/technologies'
+          index='about-technologies'>
+          Technologies used
+        </el-menu-item>
+        <el-menu-item
+          route='/about/architecture'
+          index='about-architecture'>
+          Architecture overview
+        </el-menu-item>
+      </el-submenu>
       <el-menu-item
         v-if="isAuthenticated"
         index="account"
         route="/account">
-      Account
+        Account
       </el-menu-item>
       <el-menu-item
         v-if="isAuthenticated"
         index="posts"
         route="/posts">
-      Posts
+        Posts
       </el-menu-item>
       <el-submenu
         index="4"
@@ -45,14 +67,14 @@
         @click="logout"
         style="float:right;"
         v-if="isAuthenticated">
-      Logout
+        Logout
       </el-menu-item>
       <el-menu-item
         index="login"
         route="/login"
         style="float: right;"
         v-if="!isAuthenticated && !authLoading">
-      Login
+        Login
       </el-menu-item>
       <el-menu-item
         index="debug"

@@ -8,6 +8,8 @@ import Login from '../components/login'
 import store from '../store'
 import Posts from '../components/posts';
 import Debug from '../components/debug';
+import About from '../components/about';
+import Architecture from '../components/about/Architecture.vue';
 
 Vue.use(Router)
 
@@ -58,6 +60,28 @@ export default new Router({
       name: 'debug',
       component: Debug,
       beforeEnter: ifAuthenticated,
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About,
+      children: [
+        {
+          path: '',
+          name: 'about-general',
+          component: () => import('@/components/about/General.vue'),
+        },
+        {
+          path: 'technologies',
+          name: 'technologies',
+          component: () => import('@/components/about/Technologies.vue'),
+        },
+        {
+          path: 'architecture',
+          name: 'architecture',
+          component: () => import('@/components/about/Architecture.vue'),
+        }
+      ]
     }
   ],
 })

@@ -58,7 +58,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        fixed="right"
         label="Actions"
         prop="id"
         width="180">
