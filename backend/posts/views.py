@@ -1,5 +1,7 @@
 from .models import Post
-from .serializers import PostSerializer
+from .serializers import (
+    PostSerializer,
+)
 
 from backend.celery_app import debug_task
 
