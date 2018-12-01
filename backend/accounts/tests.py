@@ -6,7 +6,7 @@ from rest_framework import status
 from django.contrib.auth.models import User
 
 
-class AccountsTests(APITestCase):
+class TestAccounts(APITestCase):
 
     def test_obtain_jwt(self):
 
