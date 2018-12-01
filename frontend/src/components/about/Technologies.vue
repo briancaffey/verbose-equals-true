@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h3>
+      Technologies used in this project
+    </h3>
     <tech-list :data="technologies"></tech-list>
   </div>
 </template>
@@ -20,5 +23,7 @@ import technologies from './technologies.js';
 </script>
 
 <style scoped>
-
+h3 {
+  text-align: center;
+}
 </style>
