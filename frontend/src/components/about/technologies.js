@@ -117,6 +117,12 @@ const technologies = [
     "desc": "Automatically enable HTTPS on your website with EFF's Certbot, deploying Let's Encrypt certificates.",
     "image": 'certbot.png',
   },
+  {
+    "name": "Traefik",
+    "link": "https://certbot.eff.org/",
+    "desc": "The Cloud Native Edge Router",
+    "image": 'traefik.png',
+  },
 ]
 
 export default technologies;

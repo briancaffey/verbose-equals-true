@@ -2,6 +2,20 @@ version: '3'
 
 services:
 
+  reverse-proxy:
+    image: traefik
+    container_name: traefik_deb_vet
+    command: --api --docker
+    volumes:
+      - ./traefik/traefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "443:443"
+      - "90:80"
+      - "8070:8080"
+    networks:
+      - main
+
   db:
     container_name: db_dev_vet
     image: postgres
@@ -55,6 +69,11 @@ services:
       - django-static:/usr/src/app/static
     networks:
       - main
+    labels:
+      - "traefik.backend=nginx"
+      - "traefik.frontend.rule=PathPrefix: /"
+      - traefik.docker.network=main
+      - traefik.port=80
 
   redis:
     image: redis:alpine
@@ -74,14 +93,14 @@ services:
     networks:
       - main
 
-  flower:  
+  flower:
     image: mher/flower
     container_name: flower_dev_vet
     command: flower --url_prefix=flower
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555
-    ports:  
+    ports:
       - 5555:5555
     networks:
       - main
@@ -104,6 +123,6 @@ volumes:
   django-static:
   portainer-data:
 
-networks: 
+networks:
   main:
     driver: bridge

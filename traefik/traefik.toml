@@ -1,0 +1,14 @@
+defaultEntryPoints = ["http"]
+
+[web]
+# Port for the status page
+address = ":8080"
+  [web.auth.basic]
+  users = ["admin:$apr1$rx0bpBKO$OdLAAu6aZ4353kIK5iR2Y0"]
+
+# Enable Docker configuration backend
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "localhost"
+watch = true
+exposedbydefault = false
