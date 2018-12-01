@@ -8,4 +8,7 @@ factory_boy
 flake8==3.6
 gunicorn==19.8
 psycopg2==2.7
+pytest
+pytest-cov==2.6.0
+pytest-django
 redis==2.10.5
