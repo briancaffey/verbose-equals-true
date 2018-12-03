@@ -74,14 +74,14 @@ services:
     networks:
       - main
 
-  flower:  
+  flower:
     image: mher/flower
     container_name: flower_dev_vet
     command: flower --url_prefix=flower
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555
-    ports:  
+    ports:
       - 5555:5555
     networks:
       - main
@@ -104,6 +104,6 @@ volumes:
   django-static:
   portainer-data:
 
-networks: 
+networks:
   main:
     driver: bridge

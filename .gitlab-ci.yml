@@ -4,8 +4,7 @@ image: python:3.6
 
 
 stages:
-  - lint
-  - test_coverage
+  - lint_test_coverage
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -28,18 +27,11 @@ cache:
 before_script:
   - cd backend && pip install -r requirements.txt
 
-lint:
-  stage: lint
-  variables:
-    DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
-  script:
-    - flake8
-
 test:
-  stage: test_coverage
+  stage: lint_test_coverage
   variables:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
     DJANGO_SETTINGS_MODULE: "backend.settings-gitlab-ci"
   script:
+    - flake8
     - pytest --cov
-  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'

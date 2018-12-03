@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="about">
   <router-view></router-view>
   </div>
 </template>
@@ -10,5 +10,8 @@ export default {}
 </script>
 
 <style scoped>
-
+.about {
+  width: 90%;
+  height: 800px;
+}
 </style>
