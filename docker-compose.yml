@@ -61,7 +61,7 @@ services:
       - "traefik.frontend.rule=Host:verbose-equals-true.tk"
       - "traefik.enable=true"
       - "traefik.frontend.passHostHeader=true"
-      - "traefik.port=90"
+      - "traefik.port=80"
 
   redis:
     image: redis:alpine
