@@ -2,8 +2,8 @@
   <div class="login">
     <h1>Sign In</h1>
     <el-form v-loading="loading">
-      <el-input :value="username"></el-input>
-      <el-input type="password" :value="password"></el-input>
+      <el-input v-model="username"></el-input>
+      <el-input type="password" v-model="password"></el-input>
       <el-button
         style="float: right;"
         type="primary"
