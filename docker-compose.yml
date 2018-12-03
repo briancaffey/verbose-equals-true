@@ -2,6 +2,21 @@ version: '3'
 
 services:
 
+  traefik:
+    image: traefik
+    container_name: traefik_deb_vet
+    command: --api --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/prod/traefik.toml:/etc/traefik/traefik.toml
+      - ./traefik/prod/acme.json:/acme.json
+    ports:
+      - "443:443"
+      - "80:80"
+      - "8070:8080"
+    networks:
+      - main
+
   db:
     container_name: db_prod_vet
     image: postgres
@@ -28,7 +43,7 @@ services:
       context: .
       dockerfile: nginx/prod/Dockerfile
     ports:
-      - "80:80"
+      - "90:80"
     depends_on:
       - backend
     volumes:
@@ -36,6 +51,12 @@ services:
       - django-static:/usr/src/app/static
     networks:
       - main
+    labels:
+      - "traefik.backend=nginx"
+      - "traefik.docker.network=main"
+      - "traefik.enable=true"
+      - "traefik.port=90"
+      - "traefik.basic.frontend.rule=PathPrefix: /"
 
   redis:
     image: redis:alpine
@@ -62,7 +83,7 @@ services:
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555
-    ports:  
+    ports:
       - 5555:5555
     networks:
       - main
@@ -85,6 +106,6 @@ volumes:
   django-static:
   portainer-data:
 
-networks: 
+networks:
   main:
     driver: bridge

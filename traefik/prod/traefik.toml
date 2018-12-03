@@ -1,0 +1,38 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+
+[retry]
+
+
+
+[web]
+# Port for the status page
+address = ":8080"
+  [web.auth.basic]
+  users = ["admin:$apr1$rx0bpBKO$OdLAAu6aZ4353kIK5iR2Y0"]
+
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "verbose-equals-true.org"
+watch = true
+exposedByDefault = false
+
+[acme]
+email = "hello@verbose-equals-true.tk"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
