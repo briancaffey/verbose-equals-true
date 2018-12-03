@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../components/home'
@@ -9,7 +8,6 @@ import store from '../store'
 import Posts from '../components/posts';
 import Debug from '../components/debug';
 import About from '../components/about';
-import Architecture from '../components/about/Architecture.vue';
 
 Vue.use(Router)
 

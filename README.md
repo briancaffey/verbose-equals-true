@@ -1,6 +1,13 @@
+<span>
+<a href="https://gitlab.com/briancaffey/verbose-equals-true/commits/master"><img alt="pipeline status" src="https://gitlab.com/briancaffey/verbose-equals-true/badges/master/pipeline.svg" /></a>
+</span> <span>&nbsp;</span>
+<span>
+<a href="https://gitlab.com/briancaffey/verbose-equals-true/commits/master"><img alt="coverage report" src="https://gitlab.com/briancaffey/verbose-equals-true/badges/master/coverage.svg" /></a>
+</span>
+
 # Docker, nginx, Django, Vue project
 
-This project is an example of how to set up a containerized Django application using nginx and VueJS. The project uses GitLab for continuous integration. 
+This project is an example of how to set up a containerized Django application using nginx and VueJS. The project uses GitLab for continuous integration.
 
 **A highly detailed explanation of the development of this project can be found in [`documentation/README.md`](/documentation/README.md).**
 

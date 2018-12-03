@@ -31,7 +31,7 @@
         prop="title"
         max-width="400"
         min-width="100"
-        sortable="cusom">
+        sortable="custom">
       </el-table-column>
       <el-table-column
         fit
@@ -43,7 +43,7 @@
         fit
         label="Created On"
         prop="created_at"
-        sortable>
+        sortable="custom">
         <template slot-scope="scope">
           {{ scope.row.created_at | formatDate }}
         </template>
@@ -52,7 +52,7 @@
         fit
         label="Updated On"
         prop="updated_at"
-        sortable>
+        sortable="custom">
         <template slot-scope="scope">
           {{ scope.row.updated_at | formatDate }}
         </template>
@@ -77,21 +77,33 @@
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination
       background
+      :page-size="paginationLimit"
       class="pagination"
       @current-change="change_page"
       :current-page.sync="listQuery.page"
-      layout="prev, pager, next"
+      @size-change="handlePaginationSizeChange"
+      :page-sizes="[5, 10, 20, 50, 100, 200, 300, 500, 1000]"
+      layout="sizes, prev, pager, next, total"
       :total="count">
     </el-pagination>
+
     <el-dialog title="Edit Post" :visible.sync="dialogFormVisible">
-      <el-form v-loading="post_form_loading" :model="form">
+      <el-form @keypress.enter.prevent="updatePost" v-loading="post_form_loading" :model="form">
         <el-form-item label="Title" :label-width="formLabelWidth">
-          <el-input v-model="form.title" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="Content" :label-width="formLabelWidth">
           <el-input
+            @keypress.enter.prevent="updatePost"
+            v-model="form.title"
+            autocomplete="off">
+          </el-input>
+        </el-form-item>
+        <el-form-item
+          label="Content"
+          :label-width="formLabelWidth">
+          <el-input
+            @keypress.enter.prevent="updatePost"
             v-model="form.content"
             placeholder="Please select a zone"
             type="textarea">
@@ -119,6 +131,7 @@ export default {
       loading: true,
       posts: [],
       count: 0,
+      paginationLimit: 10,
       listQuery: {
         page: 1,
       },
@@ -139,7 +152,8 @@ export default {
   computed: {
     params: function () {
       return {
-        offset: (this.listQuery.page - 1) * 10,
+        limit: this.paginationLimit,
+        offset: (this.listQuery.page - 1) * this.paginationLimit,
         ordering: this.ordering.join(','),
       };
     }
@@ -153,6 +167,10 @@ export default {
     }
   },
   methods: {
+    handlePaginationSizeChange(value){
+      this.paginationLimit = value;
+      this.fetchPosts();
+    },
     updatePost(){
       apiCall.patch(`api/posts/${this.form.id}/`, {
           'title':this.form.title,
