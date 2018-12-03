@@ -22,6 +22,8 @@ services:
     image: postgres
     networks:
       - main
+    labels:
+      - traefik.enable=false
 
   backend:
     container_name: backend_prod_vet
@@ -36,6 +38,8 @@ services:
       - main
     depends_on:
       - db
+    labels:
+      - traefik.enable=false
 
   nginx:
     container_name: nginx_prod_vet
@@ -54,16 +58,18 @@ services:
     labels:
       - "traefik.backend=nginx"
       - "traefik.docker.network=main"
+      - "traefik.frontend.rule=Host:verbose-equals-true.tk"
       - "traefik.enable=true"
+      - "traefik.frontend.passHostHeader=true"
       - "traefik.port=90"
-      - "traefik.basic.port=90"
-      - "traefik.basic.frontend.rule=Host:verbose-equals-true.tk"
 
   redis:
     image: redis:alpine
     container_name: redis_prod_vet
     networks:
       - main
+    labels:
+      - traefik.enable=false
 
   celery:
     build: ./backend
@@ -76,6 +82,8 @@ services:
       - redis
     networks:
       - main
+    labels:
+      - traefik.enable=false
 
   flower:
     image: mher/flower
@@ -91,6 +99,8 @@ services:
     depends_on:
       - celery
       - redis
+    labels:
+      - traefik.enable=false
 
   portainer:
     image: portainer/portainer
@@ -102,6 +112,8 @@ services:
       - 9000:9000
     networks:
       - main
+    labels:
+      - traefik.enable=false
 
 volumes:
   django-static:
