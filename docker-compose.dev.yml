@@ -4,14 +4,14 @@ services:
 
   traefik:
     image: traefik
-    container_name: traefik_deb_vet
+    container_name: traefik_dev_vet
     command: --api --docker
     volumes:
       - ./traefik/dev/traefik.toml:/etc/traefik/traefik.toml
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "443:443"
-      - "90:80"
+      - "80:80"
       - "8070:8080"
     networks:
       - main
@@ -21,6 +21,8 @@ services:
     image: postgres
     networks:
       - main
+    volumes:
+      - pg-data-dev:/var/lib/postgresql/data
 
   backend:
     container_name: backend_dev_vet
@@ -28,7 +30,7 @@ services:
     command: /start_dev.sh
     volumes:
       - .:/code
-      - django-static:/code/backend/static
+      - django-static-dev:/code/backend/static
     ports:
       - "8000:8000"
     networks:
@@ -58,15 +60,13 @@ services:
     build:
       context: .
       dockerfile: nginx/dev/Dockerfile
-    ports:
-      - "80:80"
     depends_on:
       - backend
       - frontend
       - flower
     volumes:
       - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
-      - django-static:/usr/src/app/static
+      - django-static-dev:/usr/src/app/static
     networks:
       - main
     labels:
@@ -120,8 +120,9 @@ services:
       - main
 
 volumes:
-  django-static:
+  django-static-dev:
   portainer-data:
+  pg-data-dev:
 
 networks:
   main:

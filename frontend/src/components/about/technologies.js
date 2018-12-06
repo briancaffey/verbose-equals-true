@@ -3,20 +3,20 @@
 const technologies = [
   {
     "name": "Django",
-    "link": "https://djangoproject.org",
+    "link": "https://djangoproject.com",
     "desc": "A web framework for perfectionists with deadlines.",
     "image": 'django.png',
   },
   {
     "name": "Vue JS",
     "link": "https://vuejs.org/",
-    "desc": "The Progressive JavaScript Framework",
+    "desc": "The Progressive JavaScript Framework.",
     "image": 'vue.png',
   },
   {
     "name": "Docker",
     "link": "https://www.docker.com/",
-    "desc": "The Progressive JavaScript Framework",
+    "desc": "Docker provides a way to run applications securely isolated in a container, packaged with all its dependencies and libraries.",
     "image": 'docker.png',
   },
   {
@@ -36,7 +36,7 @@ const technologies = [
   {
     "name": "GitLab",
     "link": "https://about.gitlab.com/",
-    "desc": "A single application for the entire DevOps lifecycle",
+    "desc": "A single application for the entire DevOps lifecycle.",
     "image": 'gitlab.png',
   },
   {
@@ -96,13 +96,13 @@ const technologies = [
   {
     "name": "Ubuntu",
     "link": "https://www.ubuntu.com/",
-    "desc": "The leading operating system for PCs, IoT devices, servers and the cloud",
+    "desc": "The leading operating system for PCs, IoT devices, servers and the cloud.",
     "image": 'ubuntu.svg',
   },
   {
     "name": "Portainer",
     "link": "https://portainer.io/",
-    "desc": "PORTAINER IS AN OPEN-SOURCE LIGHTWEIGHT MANAGEMENT UI WHICH ALLOWS YOU TO EASILY MANAGE YOUR DOCKER HOSTS OR SWARM CLUSTERS",
+    "desc": "Portainer is an open-source lightweight management UI which allows you to easily manage your Docker hosts or Swarm clusters.",
     "image": 'portainer.png',
   },
   {
@@ -112,16 +112,16 @@ const technologies = [
     "image": 'le.png',
   },
   {
-    "name": "Certbot",
-    "link": "https://certbot.eff.org/",
-    "desc": "Automatically enable HTTPS on your website with EFF's Certbot, deploying Let's Encrypt certificates.",
-    "image": 'certbot.png',
-  },
-  {
     "name": "Traefik",
-    "link": "https://certbot.eff.org/",
+    "link": "https://traefik.io/",
     "desc": "The Cloud Native Edge Router",
     "image": 'traefik.png',
+  },
+  {
+    "name": "Digital Ocean",
+    "link": "https://www.digitalocean.com/",
+    "desc": "Cloud Computing, Simplicity at Scale",
+    "image": 'do.svg',
   },
 ]
 

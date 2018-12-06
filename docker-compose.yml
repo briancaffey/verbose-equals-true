@@ -22,6 +22,8 @@ services:
     image: postgres
     networks:
       - main
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     labels:
       - traefik.enable=false
 
@@ -118,6 +120,7 @@ services:
 volumes:
   django-static:
   portainer-data:
+  pg-data:
 
 networks:
   main:

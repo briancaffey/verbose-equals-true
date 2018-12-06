@@ -1,12 +1,35 @@
 <template>
-  <a :href="value.link" class="tech-item">
-    <img :class="value.class" :src="image"/>
+<span>
+<el-dialog
+  :visible.sync="dialogFormVisible"
+
+  width="90%"
+  custom-class="modal">
+  <span slot="title" class="dialog-footer">
+    <span style="font-size:3em;">{{ value.name }}</span><br />
+    <span class="tech-desc" style="font-size:2em;">{{ value.desc }}</span>
+  </span>
+  <img :class="value.class + ' modal-img'" :src="image"/>
+  <span slot="footer" class="dialog-footer">
+    <a :href="value.link">
+      <el-button @click="dialogFormVisible = false">Documentation</el-button>
+    </a>
+  </span>
+</el-dialog>
+  <a @click="dialogFormVisible = true" class="tech-item">
+    <img :class="value.class + ' main'" :src="image"/>
   </a>
+</span>
 </template>
 
 <script>
 /* eslint-disable */
 export default {
+  data() {
+    return {
+      dialogFormVisible: false,
+    }
+  },
   props: { value: Object },
   computed: {
     image: function() {
@@ -17,7 +40,7 @@ export default {
     }
   }
 }
-  
+
 </script>
 
 <style scoped>
@@ -28,11 +51,27 @@ img {
   margin: 20px;
 }
 
+.modal-img {
+  max-width: 200px;
+  min-width: 199px;
+  margin: 0px;
+}
+
 .tech-item {
   display: inline;
+  cursor: pointer;
 }
 .wide {
   max-width: 300px;
   min-width: 299px;
+}
+.modal {
+  width: 90%;
+  color: red;
+  max-width: 600px;
+}
+
+span.tech-desc {
+  margin-top: 5px;
 }
 </style>
