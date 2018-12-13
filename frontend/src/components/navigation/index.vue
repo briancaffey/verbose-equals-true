@@ -44,23 +44,6 @@
         route="/posts">
         Posts
       </el-menu-item>
-      <el-submenu
-        index="4"
-        v-if="isAuthenticated">
-        <template slot="title">Files</template>
-        <el-menu-item
-          v-if="isAuthenticated"
-          index="4-1    "
-          route="/files">
-          All Files
-        </el-menu-item>
-        <el-menu-item
-          v-if="isAuthenticated"
-          index="4-2"
-          route="/files/upload">
-          File Upload
-        </el-menu-item>
-      </el-submenu>
       <el-menu-item
         route="/"
         index="logout"

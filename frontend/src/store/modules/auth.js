@@ -3,12 +3,18 @@ import { AUTH_REQUEST, AUTH_ERROR, AUTH_SUCCESS, AUTH_LOGOUT } from '../actions/
 import { USER_REQUEST } from '../actions/user'
 import apiCall from '../../utils/api.js'
 
-const state = { token: localStorage.getItem('user-token') || '', status: '', hasLoadedOnce: false }
+const state = {
+  token: localStorage.getItem('user-token') || '',
+  status: '',
+  hasLoadedOnce: false,
+  badLogin: false,
+}
 
 const getters = {
   getToken: state => state.token,
   isAuthenticated: state => !!state.token,
   authStatus: state => state.status,
+  badLogin: state => state.badLogin,
 }
 
 const actions = {
@@ -51,7 +57,9 @@ const mutations = {
     state.hasLoadedOnce = true
   },
   [AUTH_ERROR]: (state) => {
-    state.status = 'error'
+    state.badLogin = 'true';
+    state.status = 'error';
+
     state.hasLoadedOnce = true
   },
   [AUTH_LOGOUT]: (state) => {
