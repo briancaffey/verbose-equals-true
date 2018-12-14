@@ -4,10 +4,10 @@
       :router="true"
       class="el-menu-demo"
       mode="horizontal"
-      :default-active="activeIndex">
+      :default-active="activeLink">
       <el-menu-item
         route="/"
-        index="home">
+        index="/">
         Home
       </el-menu-item>
       <el-submenu
@@ -18,29 +18,29 @@
         </template>
         <el-menu-item
           route='/about'
-          index='about'>
+          index='/about'>
           What is this project?
         </el-menu-item>
         <el-menu-item
           route='/about/technologies'
-          index='about-technologies'>
+          index='/about/technologies'>
           Technologies used
         </el-menu-item>
         <el-menu-item
           route='/about/architecture'
-          index='about-architecture'>
+          index='/about/architecture'>
           Architecture overview
         </el-menu-item>
       </el-submenu>
       <el-menu-item
         v-if="isAuthenticated"
-        index="account"
+        index="/account"
         route="/account">
         Account
       </el-menu-item>
       <el-menu-item
         v-if="isAuthenticated"
-        index="posts"
+        index="/posts"
         route="/posts">
         Posts
       </el-menu-item>
@@ -53,14 +53,14 @@
         Logout
       </el-menu-item>
       <el-menu-item
-        index="login"
+        index="/login"
         route="/login"
         style="float: right;"
         v-if="!isAuthenticated && !authLoading">
         Login
       </el-menu-item>
       <el-menu-item
-        index="debug"
+        index="/debug"
         route="/debug"
         style="float: right;"
         v-if="isAuthenticated">
@@ -83,7 +83,12 @@ import { mapGetters, mapState } from 'vuex'
     name: 'navigation',
     data() {
       return {
-        activeIndex: "home"
+        activeLink: null,
+      }
+    },
+    watch: {
+      $route (to, from) {
+        this.activeLink = to.path;
       }
     },
     methods: {
@@ -91,6 +96,9 @@ import { mapGetters, mapState } from 'vuex'
         this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push('/login'));
         location.reload(true);
       }
+    },
+    mounted: function(){
+      this.activeLink = this.$route.path;
     },
     computed: {
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),

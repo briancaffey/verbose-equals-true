@@ -3,7 +3,7 @@
 const technologies = [
   {
     "name": "Django",
-    "link": "https://djangoproject.com",
+    "link": "https://www.djangoproject.com/",
     "desc": "A web framework for perfectionists with deadlines.",
     "image": 'django.png',
   },

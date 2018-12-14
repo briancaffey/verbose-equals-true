@@ -12,7 +12,9 @@
   <img :class="value.class + ' modal-img'" :src="image"/>
   <span slot="footer" class="dialog-footer">
     <a :href="value.link">
-      <el-button @click="dialogFormVisible = false">Documentation</el-button>
+      <el-button @click="dialogFormVisible = false">
+        <a class="link" :href="value.link">{{ value.link }}</a>
+      </el-button>
     </a>
   </span>
 </el-dialog>
@@ -73,5 +75,10 @@ img {
 
 span.tech-desc {
   margin-top: 5px;
+}
+
+.link {
+  text-decoration: none;
+  color: #2e426b
 }
 </style>

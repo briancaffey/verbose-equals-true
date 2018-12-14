@@ -3,7 +3,11 @@
     <navigation/>
     <div class="main-container">
       <center-container>
-        <router-view/>
+        <transition
+          name="fade"
+          mode="out-in">
+          <router-view :key="$route.path"/>
+        </transition>
       </center-container>
     </div>
   </div>
@@ -42,5 +46,17 @@ export default {
 <style scoped>
   .main-container {
     min-height: calc(100vh - 70px);
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    transition-duration: 0.15s;
+    transition-property: opacity;
+    transition-timing-function: ease;
+  }
+
+  .fade-enter,
+  .fade-leave-active {
+    opacity: 0
   }
 </style>
