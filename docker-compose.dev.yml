@@ -55,6 +55,17 @@ services:
     environment:
       - NODE_ENV=development
 
+  vuepress:
+    container_name: vuepress_dev_vet
+    build:
+      context: .
+      dockerfile: ./vuepress/dev/Dockerfile
+    command: npm run docs:dev
+    volumes:
+      - ./vuepress/src:/app/
+    networks:
+      - main
+
   nginx:
     container_name: nginx_dev_vet
     build:
@@ -64,6 +75,7 @@ services:
       - backend
       - frontend
       - flower
+      - vuepress
     volumes:
       - ./nginx/dev/dev.conf:/etc/nginx/nginx.conf:ro
       - django-static-dev:/usr/src/app/static

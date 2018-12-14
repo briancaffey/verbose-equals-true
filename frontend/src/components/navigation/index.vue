@@ -146,6 +146,12 @@
         </el-menu-item>
         <el-menu-item
           style="float: right;"
+          index="/documentation"
+          route="/documentation">
+          Documentation
+        </el-menu-item>
+        <el-menu-item
+          style="float: right;"
           v-if="isAuthenticated"
           index="/account"
           route="/account">
