@@ -4,8 +4,6 @@
       <h2>You are now logged in.</h2>
     </div>
     <div v-if="!isAuthenticated && authStatus !== 'loading'">
-      <h1>Welcome</h1>
-      <p>Please login</p>
       <login/>
     </div>
   </div>
