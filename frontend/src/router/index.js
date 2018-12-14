@@ -58,6 +58,18 @@ export default new Router({
       name: 'debug',
       component: Debug,
       beforeEnter: ifAuthenticated,
+      children: [
+        {
+          path: 'endpoints',
+          name: 'endpoints',
+          component: () => import('@/components/debug/ApiEndpoints.vue'),
+        },
+        {
+          path: 'links',
+          name: 'links',
+          component: () => import('@/components/debug/DebugLinks.vue'),
+        }
+      ]
     },
     {
       path: '/about',

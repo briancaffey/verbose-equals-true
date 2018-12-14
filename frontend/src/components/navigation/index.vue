@@ -59,13 +59,24 @@
         v-if="!isAuthenticated && !authLoading">
         Login
       </el-menu-item>
-      <el-menu-item
-        index="/debug"
-        route="/debug"
+      <el-submenu
         style="float: right;"
-        v-if="isAuthenticated">
-        Debug
-      </el-menu-item>
+        index="development">
+        <template
+          slot="title">
+          Development
+        </template>
+        <el-menu-item
+          route='/debug/links'
+          index='/debug/links'>
+          Debug Links
+        </el-menu-item>
+        <el-menu-item
+          route='/debug/endpoints'
+          index='/debug/endpoints'>
+          API Endpoints
+        </el-menu-item>
+      </el-submenu>
     </el-menu>
   </div>
 </template>
