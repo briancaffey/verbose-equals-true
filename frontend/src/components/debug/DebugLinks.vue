@@ -1,7 +1,7 @@
 <template>
   <div class='debug'>
 
-    <h2>Development Links</h2>
+    <h1>Development Links</h1>
     <external-link
       v-for="(link, i) in devLinks"
       :key='"devlink"+i'
@@ -10,17 +10,18 @@
 
     <h2>Monitoring</h2>
     <external-link
+      class="external-link"
       v-for="(link, i) in monitors"
       :key='"monitor"+i'
       :d="link">
     </external-link>
 
     <h2>API Endpoints</h2>
-    <external-link
-      v-for="(link, i) in endpoints"
-      :key="'api'+i"
-      :d="link">
-    </external-link>
+    <router-link to="/debug/endpoints">
+      <el-button>
+        View Endpoints
+      </el-button>
+    </router-link>
 
   </div>
 </template>
@@ -55,5 +56,8 @@ export default {
 }
 a {
   margin: 10px;
+}
+.external-link {
+  margin-bottom: 5px;
 }
 </style>

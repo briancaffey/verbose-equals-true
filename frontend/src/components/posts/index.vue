@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h3>Posts</h3>
+    <h1>Posts</h1>
     <el-table
       border
       fit
@@ -172,7 +172,7 @@ export default {
       this.fetchPosts();
     },
     updatePost(){
-      apiCall.patch(`api/posts/${this.form.id}/`, {
+      apiCall.patch(`/api/posts/${this.form.id}/`, {
           'title':this.form.title,
           'content':this.form.content,
         })
@@ -202,7 +202,7 @@ export default {
     handleDelete(id){
       this.$confirm(`Delete post ${id}?`)
         .then(_ => {
-          apiCall.delete(`api/posts/${id}/`)
+          apiCall.delete(`/api/posts/${id}/`)
             .then(_ => {
               this.$message(`Post ${id} deleted.`);
               this.fetchPosts();

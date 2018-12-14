@@ -11,7 +11,7 @@
 </script>
 
 <style scoped>
-.debug {
-  width: 90%;
-}
+  .debug {
+    width: 90%;
+  }
 </style>

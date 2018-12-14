@@ -9,21 +9,21 @@ const state = { status: '', profile: {} }
 
 const getters = {
   getProfile: state => state.profile,
-  isProfileLoaded: state => !!state.profile.name,
+  isProfileLoaded: state => !!state.profile.email,
 }
 
 const actions = {
   [USER_REQUEST]: ({commit, dispatch}) => {
-    commit(USER_SUCCESS, {"name":"User", "title":"Admin"})
-    // apiCall({url: 'user/me'})
-    //   .then(resp => {
-    //     commit(USER_SUCCESS, resp)
-    //   })
-    //   .catch(resp => {
-    //     commit(USER_ERROR)
-    //     // if resp is unauthorized, logout, to
-    //     dispatch(AUTH_LOGOUT)
-    //   })
+    // commit(USER_SUCCESS, {"name":"User", "title":"Admin"})
+    apiCall('/api/account/')
+      .then(resp => {
+        commit(USER_SUCCESS, resp)
+      })
+      .catch(resp => {
+        commit(USER_ERROR)
+        // if resp is unauthorized, logout, to
+        dispatch(AUTH_LOGOUT)
+      })
   },
 }
 
@@ -33,7 +33,7 @@ const mutations = {
   },
   [USER_SUCCESS]: (state, resp) => {
     state.status = 'success'
-    Vue.set(state, 'profile', resp)
+    Vue.set(state, 'profile', resp.data)
   },
   [USER_ERROR]: (state) => {
     state.status = 'error'

@@ -20,7 +20,7 @@ export default {
 
 <style scoped>
 .architecture {
-
+  height: 800px;
   width: 100%;
 }
 .draw {

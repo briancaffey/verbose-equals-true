@@ -12,6 +12,6 @@ export default {}
 <style scoped>
 .about {
   width: 90%;
-  height: 800px;
+
 }
 </style>

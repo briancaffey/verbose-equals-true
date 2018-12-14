@@ -19,4 +19,8 @@ a {
   text-decoration: none;
   margin: 10px;
 }
+
+.el-button {
+  margin-bottom: 5px;
+}
 </style>

@@ -41,9 +41,10 @@ export default {
     padding: 0;
     list-style-type: none;
   }
+
 </style>
 
-<style scoped>
+<style lang="scss" scoped>
   .main-container {
     min-height: calc(100vh - 70px);
   }
@@ -59,4 +60,6 @@ export default {
   .fade-leave-active {
     opacity: 0
   }
+
+  @import './assets/theme-overrides.scss'
 </style>
