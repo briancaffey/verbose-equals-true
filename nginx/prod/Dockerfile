@@ -1,5 +1,5 @@
 # build stage
-FROM node:9.11.1-alpine as build-stage
+FROM node:10.14.2-jessie as build-stage
 WORKDIR /app/
 COPY frontend/package.json /app/
 RUN npm cache verify
