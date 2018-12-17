@@ -9,7 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/prod/traefik.toml:/etc/traefik/traefik.toml
-      - ./traefik/prod/acme.json:/acme.json
+      - traefik-data:/acme.json
     ports:
       - "443:443"
       - "80:80"
@@ -121,6 +121,7 @@ volumes:
   django-static:
   portainer-data:
   pg-data:
+  traefik-data:
 
 networks:
   main:
