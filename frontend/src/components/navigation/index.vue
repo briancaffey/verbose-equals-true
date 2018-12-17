@@ -125,8 +125,8 @@
         </el-submenu>
         <el-menu-item
           v-if="isAuthenticated"
-          index="/posts"
-          route="/posts">
+          route="/posts"
+          index="/posts">
           Posts
         </el-menu-item>
         <el-menu-item
@@ -138,11 +138,17 @@
           Logout
         </el-menu-item>
         <el-menu-item
-          index="/login"
           route="/login"
+          index="/login"
           style="float: right;"
           v-if="!isAuthenticated && !authLoading">
           Login
+        </el-menu-item>
+        <el-menu-item
+          style="float: right;"
+          index="/documentation"
+          route="/documentation">
+          Docs
         </el-menu-item>
         <el-menu-item
           style="float: right;"
@@ -151,6 +157,20 @@
           route="/account">
           Account
         </el-menu-item>
+        <li
+          class="theme-switch"
+          style="float: right;">
+          <el-tooltip content="Toggle Theme" placement="bottom">
+            <el-switch
+              v-model="dark"
+              @change="toggleTheme"
+              active-color="#2e426b"
+              inactive-color="#2e426b"
+              active-value="100"
+              inactive-value="0">
+            </el-switch>
+          </el-tooltip>
+        </li>
         <el-submenu
           v-if="isAuthenticated"
           index="development">
@@ -183,6 +203,7 @@ import { mapGetters, mapState } from 'vuex'
     name: 'navigation',
     data() {
       return {
+        dark: true,
         activeLink: null,
         showMiniNav: false,
       }
@@ -193,6 +214,9 @@ import { mapGetters, mapState } from 'vuex'
       }
     },
     methods: {
+      toggleTheme(){
+        this.$store.commit('TOGGLE_THEME');
+      },
       clickMenuIcon: function(){
         this.showMiniNav = !this.showMiniNav;
         window.scroll({
@@ -210,7 +234,7 @@ import { mapGetters, mapState } from 'vuex'
       this.activeLink = this.$route.path;
     },
     computed: {
-      ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
+      ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded', 'getTheme']),
       ...mapState({
         authLoading: state => state.auth.status === 'loading',
       })
@@ -223,13 +247,13 @@ import { mapGetters, mapState } from 'vuex'
   text-align: center;
 
 }
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 812px) {
   .nav-bar {
     display:none;
   }
 }
 
-@media screen and (min-width: 481px) {
+@media screen and (min-width: 813px) {
   .mini-nav-bar {
     margin: 10px;
     display:none;
@@ -263,5 +287,12 @@ tt {
   font-size: 2em;
   left: 15px;
   position: fixed;
+}
+
+.theme-switch {
+    position: relative;
+    top: 50%;
+    transform: translateY(100%);
+    margin-right: 10px;
 }
 </style>

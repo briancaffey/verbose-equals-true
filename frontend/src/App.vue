@@ -1,5 +1,7 @@
 <template>
-  <div id="app">
+  <div
+    id="app"
+    :class="{ dark: !getTheme ? true : false }">
     <navigation/>
     <div class="main-container">
       <center-container>
@@ -15,6 +17,7 @@
 
 <script>
 /* eslint-disable */
+import { mapGetters } from 'vuex';
 import Navigation from '@/components/navigation'
 import { USER_REQUEST } from '@/store/actions/user'
 
@@ -22,6 +25,9 @@ export default {
   components: {
     Navigation },
   name: 'app',
+  computed: {
+    ...mapGetters(['getTheme'])
+  },
   created: function () {
     if (this.$store.getters.isAuthenticated) {
       this.$store.dispatch(USER_REQUEST)
@@ -30,21 +36,7 @@ export default {
 }
 </script>
 
-<style>
-  body {
-    margin: 0;
-    font-family: 'Roboto', sans-serif;
-    color: #2e426b;
-  }
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-  }
-
-</style>
-
-<style lang="scss" scoped>
+<style lang="scss">
   .main-container {
     min-height: calc(100vh - 70px);
   }
@@ -61,5 +53,18 @@ export default {
     opacity: 0
   }
 
-  @import './assets/theme-overrides.scss'
+  @import './assets/theme-overrides.scss';
+
+  .dark {
+    color: $--color-font-dark;
+    background-color: $--color-background-dark;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    color: $--color-font;
+    background-color: $--color-background;
+  }
+
 </style>

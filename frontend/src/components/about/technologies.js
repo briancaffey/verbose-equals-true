@@ -55,6 +55,7 @@ const technologies = [
     "name": "NGINX",
     "link": "https://www.nginx.com/",
     "desc": "High Performance Load Balancer, Web Server, & Reverse Proxy",
+    "class": "wide",
     "image": 'nginx.png',
   },
   {
