@@ -65,6 +65,8 @@ services:
       - ./vuepress/src:/app/
     networks:
       - main
+    ports:
+      - 8085:8080
 
   nginx:
     container_name: nginx_dev_vet
