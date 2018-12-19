@@ -38,7 +38,7 @@ export default {
 
 <style lang="scss">
   .main-container {
-    min-height: calc(100vh - 70px);
+    min-height: calc(100vh);
   }
 
   .fade-enter-active,
@@ -58,6 +58,18 @@ export default {
   .dark {
     color: $--color-font-dark;
     background-color: $--color-background-dark;
+
+    html {
+      background-color:  $--color-background-dark;
+    }
+
+    h1 {
+      color: white;
+    }
+
+    .tech-title {
+      color: $--color-background-dark;
+    }
   }
 
   body {

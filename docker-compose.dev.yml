@@ -59,14 +59,15 @@ services:
     container_name: vuepress_dev_vet
     build:
       context: .
-      dockerfile: ./vuepress/dev/Dockerfile
-    command: npm run docs:dev
+      dockerfile: ./vuepress/Dockerfile
+    command: yarn run docs:dev
     volumes:
-      - ./vuepress/src/:/app/
+      - ./vuepress/docs/:/app/
     networks:
       - main
     ports:
-      - 8085:8080
+      - 8085:8082
+      - 8083:8083
 
   nginx:
     container_name: nginx_dev_vet

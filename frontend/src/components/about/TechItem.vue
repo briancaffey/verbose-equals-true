@@ -6,8 +6,10 @@
   width="90%"
   custom-class="modal">
   <span slot="title" class="dialog-footer">
-    <span style="font-size:3em;"><b>{{ value.name }}</b></span><br />
-    <span class="tech-desc" style="font-size:2em;">{{ value.desc }}</span>
+    <div :class="{ 'tech-title': !getTheme ? true : false }">
+      <span style="font-size:3em;"><b>{{ value.name }}</b></span><br />
+      <span class="tech-desc" style="font-size:2em;">{{ value.desc }}</span>
+    </div>
   </span>
   <img :class="value.class + ' modal-img'" :src="image"/>
   <span slot="footer" class="dialog-footer">
@@ -26,14 +28,19 @@
 
 <script>
 /* eslint-disable */
+import { mapGetters } from 'vuex';
+
 export default {
   data() {
     return {
       dialogFormVisible: false,
     }
   },
+
+
   props: { value: Object },
   computed: {
+    ...mapGetters(['getTheme']),
     image: function() {
       const img = require(
         `./assets/${this.value.image}`

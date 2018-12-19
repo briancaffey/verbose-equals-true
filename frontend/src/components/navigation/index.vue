@@ -1,18 +1,23 @@
 <template>
-  <div>
+  <div class="navigation">
     <div class="mini-nav-bar">
       <div class="logo-wrapper">
-        <i
-          class="el-icon-menu"
-          @click="clickMenuIcon">
-        </i>
+        <div
+          :class="getIconMenuClass">
+          <i
+            class="el-icon-menu"
+            @click="clickMenuIcon">
+          </i>
+        </div>
         <tt
+          :class="{ dark : !$store.getters.getTheme }"
           @click="showMiniNav = !showMiniNav"
           >verbose = true
         </tt>
       </div>
       <br/>
       <el-menu
+        @select="miniNavClicked"
         v-show="showMiniNav"
         :router="true"
         mode="vertical"
@@ -56,6 +61,20 @@
           v-if="!isAuthenticated && !authLoading">
           Login
         </el-menu-item>
+        <li
+          class="theme-switch-mini"
+          style="width: 100%;">
+          <el-tooltip content="Toggle Theme" placement="bottom">
+            <el-switch
+              v-model="dark"
+              @change="toggleTheme"
+              active-color="#2e426b"
+              inactive-color="#2e426b"
+              active-value="100"
+              inactive-value="0">
+            </el-switch>
+          </el-tooltip>
+        </li>
         <el-menu-item
           v-if="isAuthenticated"
           index="/account"
@@ -214,6 +233,10 @@ import { mapGetters, mapState } from 'vuex'
       }
     },
     methods: {
+      miniNavClicked(i){
+        console.log(i.index);
+        this.showMiniNav = false;
+      },
       toggleTheme(){
         this.$store.commit('TOGGLE_THEME');
       },
@@ -237,12 +260,22 @@ import { mapGetters, mapState } from 'vuex'
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded', 'getTheme']),
       ...mapState({
         authLoading: state => state.auth.status === 'loading',
-      })
+      }),
+      getIconMenuClass(){
+        return this.showMiniNav ? 'menu-open' : 'menu-closed';
+      },
     },
   }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+@import '@/assets/theme-overrides.scss';
+
+.navigation {
+  width: 100%;
+}
+
 * {
   text-align: center;
 
@@ -264,9 +297,9 @@ import { mapGetters, mapState } from 'vuex'
 }
 
 .mini-nav-bar {
-  margin-top: 20px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.219);
   box-sizing: border-box;
+  padding-top: 20px;
 }
 
 .mini-nav-bar > ul {
@@ -283,16 +316,36 @@ tt {
   padding-right: 4px;
 }
 
-.el-icon-menu {
+.dark {
+  color: #2e426b;
+  background-color: white;
+}
+
+.menu-open {
   font-size: 2em;
   left: 15px;
-  position: fixed;
+  position: absolute;
+  transform: rotate(45deg);
+}
+
+.menu-closed {
+  font-size: 2em;
+  left: 15px;
+  position: absolute;
 }
 
 .theme-switch {
     position: relative;
     top: 50%;
     transform: translateY(100%);
+    margin-right: 10px;
+}
+
+.theme-switch-mini {
+    position: relative;
+    top: 50%;
+    margin-top: 15px;
+    margin-bottom: 15px;
     margin-right: 10px;
 }
 </style>

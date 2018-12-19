@@ -1,4 +1,4 @@
 FROM node:alpine
 WORKDIR /app/
-EXPOSE 8080
+EXPOSE 8082
 RUN npm install -g vuepress

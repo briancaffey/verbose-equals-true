@@ -1,5 +1,5 @@
 <template>
-  <div class='debug'>
+  <div>
 
     <h1>Development Links</h1>
     <external-link

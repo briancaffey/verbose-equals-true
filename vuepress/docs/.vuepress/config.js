@@ -1,5 +1,7 @@
 module.exports = {
   title: 'Verbose Equals True',
+  base: '/docs/',
+  port: 8082,
   serviceWorker: false,
   themeConfig: {
     sidebar: 'auto',
