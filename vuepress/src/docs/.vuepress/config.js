@@ -1,12 +1,17 @@
 module.exports = {
   title: 'Verbose Equals True',
+  serviceWorker: false,
   themeConfig: {
-    sidebar: [
-      '/',
-      '/page-a',
-      ['/page-b', 'Explicit link text']
-    ],
+    sidebar: 'auto',
     nav: [
+      {
+        text: 'Languages',
+        items: [
+          { text: 'Group1', link: '/guide/' },
+          { text: 'Group1', items: [''] },
+          { text: 'Group2', items: [''] }
+        ]
+      },
       { text: 'Home', link: '/' },
       { text: 'Start Here', link: '/start/' },
       { text: 'Guide', link: '/guide/' },

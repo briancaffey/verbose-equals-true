@@ -62,7 +62,7 @@ services:
       dockerfile: ./vuepress/dev/Dockerfile
     command: npm run docs:dev
     volumes:
-      - ./vuepress/src:/app/
+      - ./vuepress/src/:/app/
     networks:
       - main
     ports:

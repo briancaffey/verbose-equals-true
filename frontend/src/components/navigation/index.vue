@@ -146,8 +146,8 @@
         </el-menu-item>
         <el-menu-item
           style="float: right;"
-          index="/documentation"
-          route="/documentation">
+          index="/docs"
+          route="/docs">
           Docs
         </el-menu-item>
         <el-menu-item
