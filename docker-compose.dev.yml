@@ -62,10 +62,13 @@ services:
       dockerfile: ./vuepress/Dockerfile
     command: yarn run docs:dev
     volumes:
-      - ./vuepress/docs/:/app/
+      - ./vuepress/:/app/
     networks:
       - main
+    expose:
+      - 8002
     ports:
+      - 8002:8002
       - 8085:8082
       - 8083:8083
 

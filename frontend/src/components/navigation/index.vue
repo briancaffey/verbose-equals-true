@@ -81,6 +81,11 @@
           route="/account">
           Account
         </el-menu-item>
+        <el-menu-item
+          index="/documentation"
+          route="/documentation">
+          Docs
+        </el-menu-item>
         <el-submenu
           v-if="isAuthenticated"
           index="development">
@@ -165,8 +170,8 @@
         </el-menu-item>
         <el-menu-item
           style="float: right;"
-          index="/docs"
-          route="/docs">
+          index="/documentation"
+          route="/documentation">
           Docs
         </el-menu-item>
         <el-menu-item
@@ -326,12 +331,14 @@ tt {
   left: 15px;
   position: absolute;
   transform: rotate(45deg);
+  transition: .25s;
 }
 
 .menu-closed {
   font-size: 2em;
   left: 15px;
   position: absolute;
+  transition: .25s;
 }
 
 .theme-switch {

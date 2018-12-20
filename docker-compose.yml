@@ -43,6 +43,21 @@ services:
     labels:
       - traefik.enable=false
 
+  vuepress:
+    container_name: vuepress_prod_vet
+    build:
+      context: .
+      dockerfile: ./vuepress/Dockerfile
+    command: yarn run docs:build; http-server /app/docs/.vuepress/dist -p 8002
+    volumes:
+      - ./vuepress/:/app/
+    networks:
+      - main
+    expose:
+      - 8002
+    ports:
+      - 8002:8002
+
   nginx:
     container_name: nginx_prod_vet
     build:

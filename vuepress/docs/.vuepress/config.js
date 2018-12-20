@@ -10,8 +10,8 @@ module.exports = {
         text: 'Languages',
         items: [
           { text: 'Group1', link: '/guide/' },
-          { text: 'Group1', items: [''] },
-          { text: 'Group2', items: [''] }
+          // { text: 'Group1', items: [''] },
+          // { text: 'Group2', items: [''] }
         ]
       },
       { text: 'Home', link: '/' },

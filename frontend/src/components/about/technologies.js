@@ -124,6 +124,12 @@ const technologies = [
     "desc": "Cloud Computing, Simplicity at Scale",
     "image": 'do.svg',
   },
+  {
+    "name": "VuePress",
+    "link": "https://vuepress.vuejs.org/",
+    "desc": "Vue-powered Static Site Generator",
+    "image": 'vuepress.png',
+  },
 ]
 
 export default technologies;

@@ -53,6 +53,11 @@ export default {
     opacity: 0
   }
 
+  html {
+    color: white;
+
+  }
+
   @import './assets/theme-overrides.scss';
 
   .dark {
@@ -77,6 +82,7 @@ export default {
     font-family: 'Roboto', sans-serif;
     color: $--color-font;
     background-color: $--color-background;
+    transition: 1s;
   }
 
 </style>
