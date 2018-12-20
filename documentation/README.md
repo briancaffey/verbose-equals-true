@@ -45,7 +45,7 @@ Currently we only have a one file (`README.md`) and one branch (`master`). Let's
 
 ```
 git add .
-git commit -m "save readme.md
+git commit -m "save readme.md"
 git checkout -b develop master
 ```
 
@@ -365,7 +365,7 @@ We are almost ready to start our containers with `docker-compose`. Let's make on
 
 **docker-compose.yml**
 
-```yml
+```yaml
 version: '3'
 
 services:

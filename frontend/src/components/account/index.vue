@@ -22,7 +22,7 @@
         size="medium"
         :disable-transitions="true"
         v-if="profile.is_staff"
-        type="primary">
+        type="warning">
         Staff
       </el-tag>
       <el-tag

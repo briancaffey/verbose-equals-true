@@ -5,7 +5,7 @@
       <p>This project uses VuePress for documentation.</p>
       <a href="http://localhost:8085/docs">
         <el-button
-          >View Documentation
+          >View Documentation <i class="el-icon-info"></i>
         </el-button>
       </a>
     </div>

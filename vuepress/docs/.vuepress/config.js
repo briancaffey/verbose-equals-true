@@ -17,7 +17,7 @@ module.exports = {
       { text: 'Home', link: '/' },
       { text: 'Start Here', link: '/start/' },
       { text: 'Guide', link: '/guide/' },
-      { text: 'External', link: 'https://google.com' },
+      { text: 'View Site', link: 'http://localhost/' },
     ]
   }
 }
