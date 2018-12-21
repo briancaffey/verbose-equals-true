@@ -10,11 +10,11 @@
       </a>
     </div>
     <div v-else>
-      <a href="http://localhost/docs">
-      <el-button>
-        Documentation
-      </el-button>
-    </a>
+      <a href="/docs">
+        <el-button
+          >View Documentation <i class="el-icon-info"></i>
+        </el-button>
+      </a>
     </div>
   </div>
 </template>
