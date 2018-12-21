@@ -1,7 +1,4 @@
-
-# This is the Guide
-
-# Verbose Equals True
+# Getting Started
 
 This project will document the development of an application using Docker, Django, NGINX, VueJS and other containerized services.
 
@@ -9,7 +6,9 @@ Each step of the process will be described in detail with links to relevant docu
 
 First you will need to install Docker on your computer.
 
-## Docker
+## Project Setup
+
+### Docker
 
 Follow instructions for installing the community edition of docker on Ubuntu. This can be found [here](https://docs.docker.com/install/linux/docker-ce/ubuntu/).
 
@@ -36,6 +35,8 @@ docker rmi $(docker images -f "dangling=true" -q)
 docker rm $(docker ps --filter=status=exited --filter=status=created -q)
 ```
 
+### Git and GitLab
+
 Now we are ready to start developing our application. Let's first create a new project on GitLab where we will push or code.
 
 Create a new project on GitLab and clone it into a directory where you want the project to live.
@@ -54,7 +55,9 @@ git checkout -b develop master
 
 The last command will create a new branch `develop` from the `master` branch.
 
-When we crete new branches, we will branch from the `develop` branch.
+When we create new branches, we will branch from the `develop` branch.
+
+### Django Project Setup
 
 Let's follow along with the [official Docker tutorial](https://docs.docker.com/compose/django/) for creating a Django/Postgres application.
 
@@ -112,6 +115,8 @@ Next, let's create a `requirements.txt` file. Our Dockerfile is expecting this f
 Django==2.1.3
 psycopg2==2.7.5
 ```
+
+### Docker Compose
 
 Next, we will add `docker-compose.yml` to our project's root directory. `docker-compose` is a utility that will allow us to create docker containers, docker volumes and docker networks with simple `.yml` files rather than running docker commands for each container/netowrk/volume we want to use. `docker-compose` was not originally intended for use in production, but some people will use it in production. It is no different from running multiple docker commands, or running a scripts that runs several docker command in order. We will talk about deploying to production later on, for now we will only worry about running containers on our local machine.
 
@@ -241,7 +246,7 @@ drwxrwxr-x 8 brian brian  4096 Oct 27 13:14 .git
 The second issue is that we have the files for our Django project mixed in with the docker-compose file that will be used to control many different services that could have their own separate code bases. For this reason, let's take all of the files related to our `backend` service and add them to a folder called `backend` that will live in project's top-level directory.
 
 ```
-mkdir back && mv Dockerfile manage.py requirements.txtbackend/ back
+mkdir back && mv Dockerfile manage.py requirements.txt backend/ back
 mv back backend
 ```
 
@@ -364,6 +369,8 @@ COPY scripts/start.sh /
 ADD . /code/
 ```
 
+### Running our Containers
+
 We are almost ready to start our containers with `docker-compose`. Let's make one more small change to `docker-compose.yml` by adding `container_name`. This is for convenience, you'll see why soon.
 
 **docker-compose.yml**
@@ -392,6 +399,8 @@ Now let's run the command to start our containers:
 ```
 docker-compose up --build
 ```
+
+### Static Files
 
 You might see the following error:
 
@@ -428,6 +437,8 @@ docker-compose up --build
 ```
 
 We should see `admin` in the `static` file. These are the static files needed for Django's built-in admin.
+
+### Testing our Django Application
 
 Let's write a simple test to make sure that our backend is working.
 
@@ -499,6 +510,8 @@ git commit -m "added django project that works with docker-compose"
 
 Let's stay on the `feature-django` feature branch and some additional components to the Django portion of our site. First, let's ensure that we are writing well-formatted code by using linting.
 
+### Code Linting
+
 Let's add `flake8` to our `requirements.txt` file. This package will be used to do our code linting.
 
 You can read more about `flake8` [here](https://gitlab.com/pycqa/flake8).
@@ -548,6 +561,9 @@ echo $?
 ```
 
 This will return the exit code of the last command. If you see `0`, then `flake8` found no errors. If you remove a `# noqa` from the end of one of the long lines, then you will see the linting error printed out, and you will see that the result of `$?` is `1`. `$?` is a special variable that stores the return value of the previously run command.
+
+
+### Code Coverage
 
 Now that we have basic testing and linting, we should add code coverage. Django has official recommendations for how to use `coverage.py` with Django projects [here](https://docs.djangoproject.com/en/2.1/topics/testing/advanced/).
 
@@ -628,6 +644,8 @@ backend/urls.py           3      0   100%
 TOTAL                    30      0   100%
 root@3246d185a19c:/code/backend#
 ```
+
+### Continuous Integration
 
 Now that we have linting, testing and code coverage, we should add continuous integration to our project. Since we are using GitLab, using continuous integration is as simple as adding one file to the root of our project that is called `gitlab-ci.yml`:
 
