@@ -53,7 +53,6 @@ services:
     command: ["http-server", "/app/docs/.vuepress/dist", "-p", "8002"]
     volumes:
       - ./vuepress/docs:/app/docs
-      - '/app/node_modules'
     networks:
       - main
     expose:
