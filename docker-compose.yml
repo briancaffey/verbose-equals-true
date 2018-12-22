@@ -59,6 +59,8 @@ services:
       - 8002
     ports:
       - 8002:8002
+    labels:
+      - traefik.enable=false
 
   nginx:
     container_name: nginx_prod_vet
