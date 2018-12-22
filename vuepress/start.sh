@@ -17,5 +17,4 @@ ls
 
 yarn add http-server
 
-# run the development server
-http-server /app/docs/.vuepress/dist -p 8002
+npm start
