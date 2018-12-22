@@ -62,7 +62,7 @@ services:
       dockerfile: ./vuepress/Dockerfile
     command: yarn run docs:dev
     volumes:
-      - ./vuepress/:/app/
+      - ./vuepress/docs:/app/docs
     networks:
       - main
     expose:

@@ -1,6 +1,6 @@
 FROM node:alpine
 WORKDIR /app/
-COPY . .
+COPY ./vuepress/package.json .
 EXPOSE 8082
 EXPOSE 8002
-RUN yarn install
+RUN npm install

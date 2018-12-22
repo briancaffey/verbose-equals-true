@@ -52,7 +52,7 @@ services:
       dockerfile: ./vuepress/Dockerfile
     command: yarn run docs:build && http-server /app/docs/.vuepress/dist -p 8002
     volumes:
-      - ./vuepress/:/app/
+      - ./vuepress/docs:/app/docs
     networks:
       - main
     expose:
