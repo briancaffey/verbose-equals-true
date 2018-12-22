@@ -1,6 +1,7 @@
 FROM node:alpine
 WORKDIR /app/
 COPY ./vuepress/package.json .
+COPY ./docs/ ./docs/
 EXPOSE 8082
 EXPOSE 8002
 RUN npm install
