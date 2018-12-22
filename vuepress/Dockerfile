@@ -4,3 +4,4 @@ COPY ./vuepress/package.json .
 EXPOSE 8082
 EXPOSE 8002
 RUN npm install
+RUN yarn run docs:build

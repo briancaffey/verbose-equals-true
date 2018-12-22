@@ -50,7 +50,7 @@ services:
     build:
       context: .
       dockerfile: ./vuepress/Dockerfile
-    command: yarn run docs:build && http-server /app/docs/.vuepress/dist -p 8002
+    command: http-server /app/docs/.vuepress/dist -p 8002
     volumes:
       - ./vuepress/docs:/app/docs
     networks:
@@ -71,6 +71,7 @@ services:
       - "90:80"
     depends_on:
       - backend
+      - vuepress
     volumes:
       - ./nginx/prod/prod.conf:/etc/nginx/nginx.conf:ro
       - django-static:/usr/src/app/static
