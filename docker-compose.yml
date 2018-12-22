@@ -50,9 +50,7 @@ services:
     build:
       context: .
       dockerfile: ./vuepress/Dockerfile
-    command: /app/start.sh
-    volumes:
-      - ./vuepress/docs:/app/docs
+    command: ["sh", "/app/start.sh"]
     networks:
       - main
     expose:
