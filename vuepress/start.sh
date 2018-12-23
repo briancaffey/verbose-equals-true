@@ -9,12 +9,7 @@ npm install
 # build vuepress files
 yarn run docs:build
 
-npm ls
-
-pwd
-
-ls
-
 yarn add http-server
 
+# serve static files with http-server
 npm start
