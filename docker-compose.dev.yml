@@ -60,7 +60,7 @@ services:
     build:
       context: .
       dockerfile: ./vuepress/Dockerfile
-    command: yarn run docs:dev
+    command: ["sh", "/app/start_dev.sh"]
     volumes:
       - ./vuepress/docs:/app/docs
     networks:

@@ -2,8 +2,8 @@
 home: true
 
 tagline: Super Verbose Documentation
-actionText: Go the the Site →
-actionLink: http://localhost
+actionText: Get Started →
+actionLink: http://localhost/docs/guide
 features:
 - title: Clean Architecture
   details: The architecture is clean and the documentation is even cleaner.
