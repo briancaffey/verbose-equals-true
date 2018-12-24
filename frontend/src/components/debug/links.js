@@ -18,7 +18,12 @@ const links = {
     {
       'type': 'info',
       'name': 'Django Admin',
-      'link': 'admin',
+      'link': '/admin',
+    },
+    {
+      'type': 'danger',
+      'name': 'Traefik',
+      'link': '/traefik/dashboard/',
     }
   ],
   'Django Commands': [],
