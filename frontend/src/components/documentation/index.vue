@@ -10,6 +10,7 @@
       </a>
     </div>
     <div v-else>
+      <p>This project uses VuePress for documentation.</p>
       <a href="/docs">
         <el-button
           >View Documentation <i class="el-icon-info"></i>

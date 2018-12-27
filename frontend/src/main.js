@@ -10,9 +10,14 @@ import './registerServiceWorker';
 import Loading from './components/lib/loading';
 import CenterContainer from './components/lib/center-container';
 import locale from 'element-ui/lib/locale/lang/en'
+import VueAnalytics from 'vue-analytics'
 
 Vue.use(ElementUI, { locale })
 Vue.use(ElementUI);
+
+Vue.use(VueAnalytics, {
+  id: 'UA-131443776-1'
+});
 
 Vue.component('loading', Loading);
 Vue.component('center-container', CenterContainer);

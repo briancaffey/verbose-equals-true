@@ -7,6 +7,7 @@ djangorestframework-jwt
 factory_boy
 flake8==3.6
 gunicorn==19.8
+pillow
 psycopg2==2.7
 pytest
 pytest-cov==2.6.0

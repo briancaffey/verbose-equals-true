@@ -11,7 +11,7 @@ const links = {
       'link': '/flower',
     },
     {
-      'type': 'primary',
+      'type': 'default',
       'name': 'Portainer',
       'link': '/portainer',
     },

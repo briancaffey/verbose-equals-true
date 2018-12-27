@@ -6,6 +6,8 @@ NGINX is a webserver and reverse proxy that will play an important role in our a
 
 For example, we will tell NGINX to send all requests that start with `/api` or `/admin` to be sent to our Django container, not our `node` server. This makes sense, because our `node` server won't know what to do with `/api` or `/admin` requests.
 
+## Docker Compose Configuration
+
 If you are familiar with Django's URL routing, I think it is fair to say that NGINX is like a higher-level version of `urls.py` in that it directs traffic based on the properties of the incoming URLs. It will also handle `https`, serving static files, and more. We'll see all of this later, but for now let's just introduce it to our `docker-compose.dev.yml` file so we can use it in local development.
 
 Let's add the following to our `docker-compose.dev.yml` file:
@@ -25,7 +27,7 @@ Let's add the following to our `docker-compose.dev.yml` file:
 
 We don't need a `Dockerfile` for this service since we only need the base image: `nginx:alpine`. This means that we don't need to specify a `build` section for the service definition.
 
-### NGINX Configuration
+## NGINX Configuration
 
 Note that we do need to mount a file called `dev.conf` into the container. This will be the NGINX configuration file that we write to tell NGINX how to handle traffic that it receives on port `80`.
 
@@ -106,7 +108,7 @@ One simple optimization we can make is not serving static files from Django. By 
 
 We need to change the following files to do this:
 
-1. Edit `docker-commpose.dev.yml`
+1. Edit `docker-compose.dev.yml`
 2. Move `nginx/dev.conf` to `nginx/dev/dev.conf`
 3. Edit `nginx/dev/dev.conf`
 4. Add `nginx/dev/DockerfileDev`

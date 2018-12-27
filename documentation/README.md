@@ -1690,7 +1690,7 @@ One simple optimization we can make is not serving static files from Django. By 
 
 We need to change the following files to do this:
 
-1. Edit `docker-commpose.dev.yml`
+1. Edit `docker-compose.dev.yml`
 2. Move `nginx/dev.conf` to `nginx/dev/dev.conf`
 3. Edit `nginx/dev/dev.conf`
 4. Add `nginx/dev/DockerfileDev`

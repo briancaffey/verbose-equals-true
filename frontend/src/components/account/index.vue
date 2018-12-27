@@ -5,6 +5,7 @@
     </div>
     <h2>Basic Information</h2>
     <p v-if="profile">
+      <img class="avatar" :src="profile.avatar" />
       <p><strong>Email:</strong> {{profile.email}}
       <p><strong>Username:</strong> {{ profile.username }}
       <p><strong>User ID:</strong> {{ profile.pk }}
@@ -58,5 +59,11 @@ export default {
   }
   .el-tag {
     margin-right: 5px;
+  }
+
+  .avatar {
+    border-radius: 50%;
+    height: 75px;
+    background-color: beige;
   }
 </style>

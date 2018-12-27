@@ -329,6 +329,7 @@ tt {
 .menu-open {
   font-size: 2em;
   left: 15px;
+  top: 17px;
   position: absolute;
   transform: rotate(45deg);
   transition: .25s;
@@ -337,6 +338,7 @@ tt {
 .menu-closed {
   font-size: 2em;
   left: 15px;
+  top: 17px;
   position: absolute;
   transition: .25s;
 }
