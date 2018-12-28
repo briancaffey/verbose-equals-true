@@ -52,7 +52,14 @@ class Command(BaseCommand):
                     is_staff=user['is_staff'],
                 )
 
-                avatar = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'img', user['avatar'])), "rb")
+                avatar = open(
+                    os.path.abspath(os.path.join(
+                        os.path.dirname(__file__),
+                        '..',
+                        'img',
+                        user['avatar']
+                    )), "rb")
+
                 django_file = File(avatar)
 
                 u.profile.avatar.save(
