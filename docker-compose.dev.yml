@@ -35,6 +35,8 @@ services:
       - "8000:8000"
     networks:
       - main
+    environment:
+      - DEBUG=True
     depends_on:
       - db
 
