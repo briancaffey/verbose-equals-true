@@ -16,7 +16,8 @@ Vue.use(ElementUI, { locale })
 Vue.use(ElementUI);
 
 Vue.use(VueAnalytics, {
-  id: 'UA-131443776-1'
+  id: 'UA-131443776-1',
+  router
 });
 
 Vue.component('loading', Loading);
