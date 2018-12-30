@@ -116,7 +116,7 @@ services:
   flower:
     image: mher/flower
     container_name: flower_dev_vet
-    command: flower --url_prefix=flower
+    command: --url_prefix=flower --basic_auth=$${FLOWER_USERNAME}:$${FLOWER_PASSWORD}
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555
