@@ -42,6 +42,7 @@ services:
       - main
     environment:
       - DEBUG=False
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     depends_on:
       - db
     labels:
@@ -72,6 +73,8 @@ services:
     depends_on:
       - backend
       - vuepress
+    environment:
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     volumes:
       - ./nginx/prod/prod.conf:/etc/nginx/nginx.conf:ro
       - django-static:/usr/src/app/static
@@ -110,7 +113,7 @@ services:
   flower:
     image: mher/flower
     container_name: flower_prod_vet
-    command: flower --url_prefix=flower
+    command: "--url_prefix=flower --basic_auth=${FLOWER_USERNAME}:${FLOWER_PASSWORD}"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555

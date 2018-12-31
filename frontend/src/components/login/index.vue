@@ -45,7 +45,7 @@
       changeDemoUser(u){
         console.log('hmm');
         this.username = u.username;
-        this.password = 'qwertyuiop';
+        this.password = process.env.VUE_APP_DEMO_PASSWORD;
         document.getElementById('login').click();
       },
       login: function () {

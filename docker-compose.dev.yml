@@ -37,6 +37,7 @@ services:
       - main
     environment:
       - DEBUG=True
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     depends_on:
       - db
 
@@ -56,6 +57,7 @@ services:
       - db
     environment:
       - NODE_ENV=development
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
 
   vuepress:
     container_name: vuepress_dev_vet
@@ -116,7 +118,7 @@ services:
   flower:
     image: mher/flower
     container_name: flower_dev_vet
-    command: --url_prefix=flower --basic_auth=$${FLOWER_USERNAME}:$${FLOWER_PASSWORD}
+    command: "--url_prefix=flower --basic_auth=${FLOWER_USERNAME}:${FLOWER_PASSWORD}"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555

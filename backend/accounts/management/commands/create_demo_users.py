@@ -17,7 +17,7 @@ class Command(BaseCommand):
                 "username": "andy",
                 "avatar": "demo1.png",
                 "email": "andy@company.com",
-                "is_staff": True,
+                "is_staff": False,
                 "is_active": True,
             },
             {
@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 "username": "katie",
                 "avatar": "demo3.png",
                 "email": "katie@company.com",
-                "is_staff": True,
+                "is_staff": False,
                 "is_active": True,
             },
             {
@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 u = User.objects.create_user(
                     user['username'],
                     user['email'],
-                    'qwertyuiop',
+                    os.getenv('VUE_APP_DEMO_PASSWORD', 'demopwd123'),
                     is_staff=user['is_staff'],
                 )
 
