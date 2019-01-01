@@ -2,12 +2,22 @@ module.exports = {
   title: 'Verbose Equals True',
   base: '/docs/',
   port: 8082,
+  plugins: {
+    '@vuepress/google-analytics': {
+      'ga': 'UA-131443776-1',
+    },
+  },
   serviceWorker: false,
   themeConfig: {
     sidebar: 'auto',
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Start Here', link: '/start/' },
+      {
+        text: 'Start Here',
+        items: [
+          { text: 'Overview', link: '/start/' },
+        ]
+      },
       {
         text: 'Guide',
         items: [
@@ -19,9 +29,11 @@ module.exports = {
           { text: 'Celery & Redis', link: '/guide/celery-and-redis/' },
           { text: 'Production Environment', link: '/guide/production-environment/' },
           { text: 'Vue Authentication', link: '/guide/vue-authentication/' },
+        ]
+      },
+      { text: 'Website', link: 'https://verbose-equals-true.tk' },
+      { text: 'Source Code', link: 'https://gitlab.com/briancaffey/verbose-equals-true/tree/master/vuepress' },
 
-        ]},
-      { text: 'View Site', link: 'http://localhost/' },
     ]
   }
 }

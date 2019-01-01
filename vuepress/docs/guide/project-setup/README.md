@@ -2,11 +2,16 @@
 
 This project will document the development of an application using Docker, Django, NGINX, VueJS and other containerized services.
 
+## Project Setup
+
 Each step of the process will be described in detail with links to relevant documentation and resources used in putting together this application. This project uses official documentation recommendations whenever possible. We will be starting from a fresh installation of `Ubuntu 16.04` and installing everything as we need it.
+
+::: tip Operating System
+This documentation is written for [Ubuntu 16.04 LTS](https://www.ubuntu.com/download/alternative-downloads). To install Ubuntu, refer to [this tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0) from the official Ubuntu website.
+:::
 
 First you will need to install Docker on your computer.
 
-## Project Setup
 
 ### Docker
 
@@ -37,7 +42,7 @@ docker rm $(docker ps --filter=status=exited --filter=status=created -q)
 
 ### Git and GitLab
 
-Now we are ready to start developing our application. Let's first create a new project on GitLab where we will push or code.
+Now we are ready to start developing our application. Let's first create a new project on GitLab where we will push our code.
 
 Create a new project on GitLab and clone it into a directory where you want the project to live.
 
@@ -63,14 +68,14 @@ Let's follow along with the [official Docker tutorial](https://docs.docker.com/c
 
 Let's add a `Dockerfile` to the root of our project:
 
-```
- FROM python:3.6
- ENV PYTHONUNBUFFERED 1
- RUN mkdir /code
- WORKDIR /code
- ADD requirements.txt /code/
- RUN pip install -r requirements.txt
- ADD . /code/
+```Dockerfile
+FROM python:3.6
+ENV PYTHONUNBUFFERED 1
+RUN mkdir /code
+WORKDIR /code
+ADD requirements.txt /code/
+RUN pip install -r requirements.txt
+ADD . /code/
 ```
 
 I'm changing the first line from `python:3` to `python:3.6`, everything else is the same.
@@ -155,7 +160,11 @@ Let's look at each line of this file:
 
 This line tells the Docker container to run the command `python3 manage.py runserver 0.0.0.0:8000`. This command can also be executed from inside the `Dockerfile` used to build the `backend` service. Instead of writing the command here, we can also include an executable script that will run a series of commands. We will do this soon.
 
-> Note: `runserver` starts the Django development server. The development server is not intended for production use; it is for local development only. Later on we will add `gunicorn` to replace Django's `runserver` command.
+
+
+::: warning runsever vs gunicorn
+ `runserver` starts the Django development server. The development server is not intended for production use; it is for local development only. Later on we will add `gunicorn` to replace Django's `runserver` command.
+:::
 
 ```yml
 volumes:
@@ -206,7 +215,7 @@ drwxrwxr-x 8 brian brian 4096 Oct 27 13:06 .git
 
 There are two issues we have to deal with. First, the files that we created are owned by `root` user. This is because docker does things as the root user.
 
-First, let's change the permissions for these files as the tutorial instructs:
+First, let's change the permissions for these files as the tutorial instructs us to:
 
 ```
 sudo chown -R $USER:$USER .
@@ -214,9 +223,9 @@ sudo chown -R $USER:$USER .
 
 This commands changes all file in the current directory to be owned by the current user and also changes the group of the files in the current directory to be owned by the current user's group.
 
-The `-R` flag makes the change in ownership recursively for all folders and files in the current directory.
+The `-R` flag makes the change in ownership recursively for all folders and files in the current directory. Notice the difference in file and folder ownership before and after we issue a `chown` command:
 
-```
+```sh {1}
 ls -al
 total 44
 drwxrwxr-x 4 brian brian 4096 Oct 27 12:48 .
@@ -228,6 +237,9 @@ drwxrwxr-x 8 brian brian 4096 Oct 27 13:06 .git
 -rwxr-xr-x 1 root  root   539 Oct 27 12:48 manage.py
 -rw-rw-r-- 1 brian brian 9342 Oct 27 13:06 README.md
 -rw-rw-r-- 1 brian brian   25 Oct 27 12:47 requirements.txt
+```
+
+```sh {1,3}
 sudo chown -R $USER:$USER .
 [sudo] password for brian:
 ls -al

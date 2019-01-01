@@ -3,7 +3,7 @@
     <h1>Documentation</h1>
     <div v-if="devMode">
       <p>This project uses VuePress for documentation.</p>
-      <a href="http://localhost:8085/docs">
+      <a href="http://localhost:8085/docs" target="_blank">
         <el-button
           >View Documentation <i class="el-icon-info"></i>
         </el-button>
@@ -11,7 +11,7 @@
     </div>
     <div v-else>
       <p>This project uses VuePress for documentation.</p>
-      <a href="/docs">
+      <a href="/docs" target="_blank">
         <el-button
           >View Documentation <i class="el-icon-info"></i>
         </el-button>

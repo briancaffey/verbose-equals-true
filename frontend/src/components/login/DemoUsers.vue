@@ -13,7 +13,7 @@
         :src="u.avatar"
         :alt="u.username"
         style="display: inline; vertical-align: middle;"/>
-      <el-button @click="selectUser(u)" class="login-as">Login as {{ u.username }}</el-button>
+      <el-button @click="selectUser(u)" class="login-as">Sign in as {{ u.username }}</el-button>
     </el-card>
   </div>
 </template>

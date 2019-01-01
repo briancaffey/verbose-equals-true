@@ -38,7 +38,7 @@ Let's globally import `Element UI` as recommmended in the [official documentatio
 
 **frontend/src/main.js**
 
-```es6
+```js
 import Vue from 'vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -130,7 +130,7 @@ Let's start with the `main.js` file. We first import `Vue`, `App`, `router` and 
 
 Next let's import `Loading` and `CenterContainer` and then register these components globally:
 
-```es6
+```js
 import Loading from 'components/lib/loading'
 import CenterContainer from 'components/lib/center-container'
 
@@ -182,7 +182,7 @@ The script section imports two components and an `action` from the `store`. Let'
 
 **src/router/index.js**
 
-```es6
+```js
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from 'components/home'
@@ -240,7 +240,7 @@ If we visit `/login`, we will first run the `ifNotAuthenticated` function. This 
 
 **src/store/modules/auth.js**
 
-```es6
+```js
 const getters = {
   isAuthenticated: state => !!state.token,
   authStatus: state => state.status,
@@ -273,7 +273,7 @@ Let's now look at the `Login` component:
 
 This is a fairly standard login form for Vue. Notice how we place the `@submit` action on the form, not the `button` in the form.
 
-```es6
+```js
 <script>
   import {AUTH_REQUEST} from 'actions/auth'
 
@@ -301,7 +301,7 @@ In the `script` section we import `AUTH_REQUEST` from `actions/auth`. In `method
 
 Let's look at `AUTH_REQUEST`:
 
-```es6
+```js
   [AUTH_REQUEST]: ({commit, dispatch}, user) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REQUEST)
@@ -332,13 +332,13 @@ In Vue, you *`commit`* **`mutations`** and you *`dispatch`* **`actions`**. Commi
 
 Back in the `login` method, we dispathed an action:
 
-```es6
+```js
 this.$store.dispatch(AUTH_REQUEST, { username, password })
 ```
 
 Inside this action, we can commit a mutation. In `src/store/modules/auth.js`, we have an object called `mutations`, and one of the properties of this object is `AUTH_REQUEST`. This is the function that is called when we *commit* the `AUTH_REQUEST` **mutation** inside of the `AUTH_REQUEST` action. Here's what the mutation looks like:
 
-```es6
+```js
   [AUTH_REQUEST]: (state) => {
     state.status = 'loading'
   },
@@ -354,7 +354,7 @@ This will display the spinner. We want to display the loading spinner while we w
 
 The `apiCall` function is imported from `utils/api`. This function simulates a `POST` request to a server, and when it is resolved it returns the following:
 
-```es6
+```js
 { token: 'This-is-a-mocked-token' }
 ```
 
@@ -364,7 +364,7 @@ Then, save this token returned be `apiCall` in `localStorage`. You can view loca
 
 After we set the token in `localStorage`, we see the following:
 
-```es6
+```js
         // Here set the header of your ajax library to the token value.
         // example with axios
         // axios.defaults.headers.common['Authorization'] = resp.token
@@ -372,13 +372,13 @@ After we set the token in `localStorage`, we see the following:
 
 Let's uncomment this code and set the axios header with the returned token:
 
-```es6
+```js
         axios.defaults.headers.common['Authorization'] = resp.token
 ```
 
 Next, we commit the `AUTH_SUCCESS` mutation which does the following:
 
-```es6
+```js
   [AUTH_SUCCESS]: (state, resp) => {
     state.status = 'success'
     state.token = resp.token
@@ -395,7 +395,7 @@ Setting the state's status to `success` will remove the loading spinner. Also, w
 
 `isAuthenticated` is a computed property in our `Home` component and it is made available by calling:
 
-```es6
+```js
 ...mapGetters(['isAuthenticated', 'authStatus']),
 ```
 
@@ -407,7 +407,7 @@ This will return true, because we now have a token in our state, so we will see 
 
 Now that we have seen a little bit of the authentication process, let's go back to `App.vue` and look at the `created` function:
 
-```es6
+```js
   created: function () {
     if (this.$store.getters.isAuthenticated) {
       this.$store.dispatch(USER_REQUEST)
@@ -419,7 +419,7 @@ If the user `isAuthenticated`, we will *`dispatch`* the `USER_REQUEST` **`action
 
 Let's look at the `USER_REQUEST` action:
 
-```es6
+```js
   [USER_REQUEST]: ({commit, dispatch}) => {
     commit(USER_REQUEST)
     apiCall({url: 'user/me'})
@@ -436,13 +436,13 @@ Let's look at the `USER_REQUEST` action:
 
 This makes another mock request, but this time we are making a `GET` request to `user/me`. This will return the following:
 
-```es6
+```js
   'user/me': { 'GET': { name: 'doggo', title: 'sir' } }
 ```
 
 Then, we *`commit`* the `UESR_SUCCESS` **`mutation`** (synchronous action). Let's look at the `USER_SUCCESS` mutation:
 
-```es6
+```js
   [USER_SUCCESS]: (state, resp) => {
     state.status = 'success'
     Vue.set(state, 'profile', resp)
@@ -462,7 +462,7 @@ Changing the profile state will change the Navigation bar to display the user's 
 `isProfileLoaded` is a getter that will react to changes in the global state because we include it in the list we pass to `mapGetters` which is then spread into the component's `computed` property.
 
 
-```es6
+```js
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
 ```
 
@@ -490,7 +490,7 @@ We will want to:
 
 First, let's import axios in `api.js` and create an axios instance:
 
-```es6
+```js
 import axios from 'axios';
 
 // create an axios instance
@@ -501,7 +501,7 @@ const service = axios.create({
 
 Next we want to add a request interceptor to `service` that will add our token to the request header (if a token exists) before each request is sent out. Here's an example from axios's [github page](https://github.com/axios/axios):
 
-```es6
+```js
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
     // Do something before request is sent
@@ -514,7 +514,7 @@ axios.interceptors.request.use(function (config) {
 
 In our code, we can add the following:
 
-```es6
+```js
 import axios from 'axios';
 import store from '../store';
 
@@ -543,7 +543,7 @@ export default apiCall
 
 Now let's use this new `apiCall`. When a user logs in, the login form calls the `login` method. This dispatches `AUTH_REQUEST`. Here's our new `AUTH_REQUEST` in `src/store/modules/auth.js` (with comments):
 
-```es6
+```js
   [AUTH_REQUEST]: ({commit, dispatch}, user) => { //define `AUTH_REQUEST` action
     return new Promise((resolve, reject) => { // return a Promise
       commit(AUTH_REQUEST) // commit `AUTH_REQUEST` mutation; displays the Loading spinner or message
@@ -573,7 +573,7 @@ Our login form doesn't show any message if we submit an invalid username/passwor
 
 One other things to mention is that we have not implemented a user profile, so we don't have anything for `USER_REQUEST`. Recall that `USER_REQUEST` originally made a mock request to get user profile data. We can keep this mocked for now with this:
 
-```es6
+```js
 const actions = {
   [USER_REQUEST]: ({commit, dispatch}) => {
     commit(USER_SUCCESS, {"name":"Brian", "title":"Admin"})
@@ -598,11 +598,11 @@ We can come back to this once we implement a user profile. Let's review the chan
 - `src/store/modules/users.js`
 - `src/utils/api.js`
 
-### `src/components/login/index.vue` (1 area to change)
+### Login Component
 
 Change `data` to default to `admin`/`password` for the login form:
 
-```es6
+```js
     data () {
       return {
         username: 'admin',
@@ -611,7 +611,7 @@ Change `data` to default to `admin`/`password` for the login form:
     },
 ```
 
-### `src/components/navigation/index.vue` (2 areas to change)
+### Navigation Component
 
 Remove `{{ name }}` from the template. I have replaced it with `Welcome`:
 
@@ -623,7 +623,7 @@ Remove `{{ name }}` from the template. I have replaced it with `Welcome`:
 
 Remove `name` from computed properties:
 
-```es6
+```js
     computed: {
       ...mapGetters(['getProfile', 'isAuthenticated', 'isProfileLoaded']),
       ...mapState({
@@ -633,11 +633,11 @@ Remove `name` from computed properties:
     },
 ```
 
-### `src/store/modules/auth.js` (3 areas to change)
+### `auth` module
 
 Replace the original `apiCall` with our new call to the Django backend:
 
-```es6
+```js
       apiCall.post(
         '/api/auth/obtain_token/',
         user
@@ -646,13 +646,13 @@ Replace the original `apiCall` with our new call to the Django backend:
 
 When we set `localStorage`, set the token to `resp.data.token`, not `resp.token`:
 
-```es6
+```js
         localStorage.setItem('user-token', resp.data.token)
 ```
 
 Similarly, in `AUTH_SUCCESS`, set token in our state to `resp.data.token`, not `resp.token`:
 
-```es6
+```js
   [AUTH_SUCCESS]: (state, resp) => {
     state.status = 'success'
     state.token = resp.data.token
@@ -660,11 +660,11 @@ Similarly, in `AUTH_SUCCESS`, set token in our state to `resp.data.token`, not `
   },
 ```
 
-### `src/store/modules/users.js` (2 areas to change)
+### `users` module
 
 Remove the `apiCall` from the `USER_ACTION`, commit the `USER_SUCCESS` *mutation* with mock data and comment out the rest of the function:
 
-```es6
+```js
 const actions = {
   [USER_REQUEST]: ({commit, dispatch}) => {
     commit(USER_SUCCESS, {"name":"User", "title":"Admin"})
@@ -683,18 +683,18 @@ const actions = {
 
 Add `state.status = ""` to `AUTH_LOGOUT`:
 
-```es6
+```js
   [AUTH_LOGOUT]: (state) => {
     state.profile = {},
     state.status = ""
   }
 ```
 
-### `src/utils/api.js`
+### `api` module
 
 Replace the mock API call with our own API to the Django backend using `axios`. Here we also add an interceptor so that each request attaches the token to it's header before it is sent:
 
-```es6
+```js
 import axios from 'axios';
 import store from '../store';
 
