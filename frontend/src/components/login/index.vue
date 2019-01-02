@@ -45,7 +45,7 @@
       changeDemoUser(u){
         console.log('hmm');
         this.username = u.username;
-        this.password = asdfghjkl;
+        this.password = 'asdfghjkl';
         document.getElementById('login').click();
       },
       login: function () {
