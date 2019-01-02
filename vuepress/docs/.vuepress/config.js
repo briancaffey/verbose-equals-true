@@ -9,7 +9,7 @@ module.exports = {
   },
   serviceWorker: false,
   themeConfig: {
-    lastUpdated: true,
+    lastUpdated: 'Last Updated: ',
     sidebar: 'auto',
     nav: [
       { text: 'Home', link: '/' },

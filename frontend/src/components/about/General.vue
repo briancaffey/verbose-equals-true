@@ -8,6 +8,9 @@
     <p>For a visual overview of this project, see the architecture overview.</p>
 
     <router-link class="link" to="/about/architecture/"><el-button>Architecture Overview</el-button></router-link>
+    <p>For an in-depth description of this project, see the documentation:</p>
+
+    <router-link class="link" to="/documentation/"><el-button>Project Documentation</el-button></router-link>
   </div>
 </template>
 

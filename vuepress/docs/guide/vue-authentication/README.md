@@ -178,7 +178,9 @@ export default {
 </script>
 ```
 
-The script section imports two components and an `action` from the `store`. Let's talk about the store after we have a look at the `router` file:
+The script section imports two components and an `action` from the `store`. Let's talk about the store after we have a look at the `router` file.
+
+### Frontend routes used for authentication
 
 **src/router/index.js**
 
@@ -233,6 +235,8 @@ export default new Router({
 ```
 
 Here we are importing the Router, registering it to Vue, defining functions that will be called before the `/account` and `/login` routes are visited. We see this in the `beforeEnter` property in the `routes` attribute in the `Router` we are instantiating to be used in our application.
+
+### Login route
 
 Let's start with the `/login` route.
 
