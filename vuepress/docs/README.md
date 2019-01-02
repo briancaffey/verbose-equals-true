@@ -54,7 +54,7 @@ This project incorporates many of the lessons and techniques I have learned from
 
 There are lots of reasons why I am working on this project. Primarily, I started this project to teach myself things I don't know in a way that I can get help and feedback from others.
 
-The original motivation for starting this project came out of frustration from working on a poorly documented project with overly complex, homegrown processes for local development and deployment. While I love how writing software lends itself to creativity and original thinking, I think that a heard-animal mentality is extremely important for selecting tools, languages, frameworks and workflows, especially when it comes to the productivity and happiness of software engineering teams.
+The original motivation for starting this project came out of frustration from working on a poorly documented project with overly complex, homegrown processes for local development and deployment. While I love how writing software lends itself to creativity and original thinking, I think that a herd animal mentality is extremely important for selecting tools, languages, frameworks and workflows, especially when it comes to the productivity and happiness of software engineering teams.
 
 Every software engineer has a different set preferences for tooling, style and development patterns. My goal with this project is not to say that my set of preferences is better than any other set of preferences; it is to demonstrate a **complete** set of preferences clearly and thoroughly.
 
