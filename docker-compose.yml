@@ -73,8 +73,6 @@ services:
     depends_on:
       - backend
       - vuepress
-    environment:
-      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     volumes:
       - ./nginx/prod/prod.conf:/etc/nginx/nginx.conf:ro
       - django-static:/usr/src/app/static
