@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+import os
 
 
 class Command(BaseCommand):
@@ -12,7 +13,7 @@ class Command(BaseCommand):
             User.objects.create_superuser(
                 'admin',
                 'admin@company.com',
-                'password'
+                os.getenv('ADMIN_PASSWORD', 'adminpwd123'),
             )
             print(
                 """
