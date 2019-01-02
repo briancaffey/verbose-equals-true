@@ -9,13 +9,15 @@ module.exports = {
   },
   serviceWorker: false,
   themeConfig: {
+    lastUpdated: true,
     sidebar: 'auto',
     nav: [
       { text: 'Home', link: '/' },
       {
         text: 'Start Here',
         items: [
-          { text: 'Overview', link: '/start/' },
+          { text: 'Overview', link: '/start/overview/' },
+          { text: 'Tools Used', link: '/start/tools/' },
         ]
       },
       {

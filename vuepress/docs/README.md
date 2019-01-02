@@ -3,7 +3,7 @@ home: true
 
 tagline: Documentation for Verbose Equals True
 actionText: Get Started →
-actionLink: start/
+actionLink: start/overview/
 features:
 - title: Free and Open Source
   details: Everything in this project is and always will be free and open source. There is no premium content, paywall or credit card required.
@@ -64,7 +64,7 @@ I started working on this project in the fall of 2018. Software engineering and 
 
 ### Get started
 
-If you are interested and want to learn more, [start here](start/).
+If you are interested and want to learn more, [start here](start/overview/).
 
 ### Thank you
 
