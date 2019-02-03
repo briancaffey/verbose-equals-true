@@ -8,13 +8,15 @@ variables:
 build:
   stage: build
   image: docker:latest
+  services:
+    - docker:dind
   script:
     - apk add --no-cache curl jq python py-pip
     - pip install awscli
-    - echo "login to ecr"
     - $(aws ecr get-login --no-include-email --region us-east-1)
-    - echo "Running build script"
-    - echo $REPOSITORY_URL
+    - echo "build and push images..."
+    - docker build -t $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA backend
+    - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
   tags:
     - local
 
