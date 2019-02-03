@@ -15,6 +15,7 @@ build:
     - pip install awscli
     - $(aws ecr get-login --no-include-email --region us-east-1)
     - echo "build and push images..."
+    - docker info
     - docker build -t $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA backend
     - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
   tags:
