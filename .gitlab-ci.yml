@@ -41,5 +41,6 @@ test_e2e:
     - cd frontend
     - npm install
     - npm run serve &
+    - wait-on http://localhost:8000/foo
     - sleep 3
     - $(npm bin)/cypress run
