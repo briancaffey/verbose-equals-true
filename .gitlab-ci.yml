@@ -35,3 +35,22 @@ test:
   script:
     - flake8
     - pytest --cov
+
+
+test_unit:
+  stage: lint_test_coverage
+  image: node:latest
+  script:
+    - cd frontend
+    - npm install
+    - npm run lint
+    - npm run test:unit
+
+test_e2e:
+  image: cypress/base:10
+  stage: lint_test_coverage
+  script:
+    - cd frontend
+    - npm install
+    - npm run serve &
+    - $(npm bin)/cypress run

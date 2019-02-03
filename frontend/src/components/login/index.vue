@@ -8,14 +8,14 @@
         show-icon>
       </el-alert>
     <el-form v-loading="loading">
-      <el-input v-model="username"></el-input>
-      <el-input type="password" v-model="password"></el-input>
+      <el-input id="login" v-model="username"></el-input>
+      <el-input id="password" type="password" v-model="password"></el-input>
       <el-button
         style="float: right;"
         type="primary"
         @click.native.prevent="login"
         ref="login"
-        id="login"
+        id="login-button"
       >
         Login
       </el-button>
