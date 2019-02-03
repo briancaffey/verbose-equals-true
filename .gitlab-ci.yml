@@ -1,8 +1,3 @@
-# Official framework image. Look for the different tagged releases at:
-# https://hub.docker.com/r/library/python
-image: python:3.6
-
-
 stages:
   - lint_test_coverage
 
@@ -24,8 +19,6 @@ cache:
 
 # This is a basic example for a gem or script which doesn't use
 # services such as redis or postgres.
-before_script:
-  - cd backend && pip install -r requirements.txt
 
 test:
   stage: lint_test_coverage
@@ -33,6 +26,7 @@ test:
     DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/$POSTGRES_DB"
     DJANGO_SETTINGS_MODULE: "backend.settings-gitlab-ci"
   script:
+    - cd backend && pip install -r requirements.txt
     - flake8
     - pytest --cov
 
