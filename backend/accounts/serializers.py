@@ -5,9 +5,16 @@ User = get_user_model()
 
 
 class CurrentUserSerializer(serializers.ModelSerializer):
+
+    avatar = serializers.SerializerMethodField()
+
+    def get_avatar(self, obj):
+        return obj.profile.avatar.url
+
     class Meta:
         model = User
         fields = (
+            'avatar',
             'username',
             'email',
             'pk',

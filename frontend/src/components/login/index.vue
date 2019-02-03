@@ -8,16 +8,19 @@
         show-icon>
       </el-alert>
     <el-form v-loading="loading">
-      <el-input v-model="username"></el-input>
-      <el-input type="password" v-model="password"></el-input>
+      <el-input id="login" v-model="username"></el-input>
+      <el-input id="password" type="password" v-model="password"></el-input>
       <el-button
         style="float: right;"
         type="primary"
         @click.native.prevent="login"
+        ref="login"
+        id="login-button"
       >
         Login
       </el-button>
     </el-form>
+    <demo-users @selectUser="changeDemoUser"></demo-users>
   </div>
 </template>
 
@@ -25,20 +28,30 @@
 /* eslint-disable */
   import {AUTH_REQUEST} from '@/store/actions/auth'
   import { mapGetters } from 'vuex';
+  import DemoUsers from './DemoUsers.vue';
 
   export default {
     name: 'login',
+    components: {
+      DemoUsers,
+    },
     data () {
       return {
-        username: 'admin',
-        password: 'password',
+        username: '',
+        password: '',
       }
     },
     methods: {
+      changeDemoUser(u){
+        console.log('hmm');
+        this.username = u.username;
+        this.password = 'asdfghjkl';
+        document.getElementById('login').click();
+      },
       login: function () {
         const { username, password } = this
         this.$store.dispatch(AUTH_REQUEST, { username, password }).then(() => {
-          this.$router.push('/')
+          this.$router.push('/account')
         })
       }
     },

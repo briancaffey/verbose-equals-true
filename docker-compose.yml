@@ -16,6 +16,8 @@ services:
       - "8070:8080"
     networks:
       - main
+    labels:
+      - traefik.enable=false
 
   db:
     container_name: db_prod_vet
@@ -38,8 +40,26 @@ services:
       - "8000:8000"
     networks:
       - main
+    environment:
+      - DEBUG=False
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     depends_on:
       - db
+    labels:
+      - traefik.enable=false
+
+  vuepress:
+    container_name: vuepress_prod_vet
+    build:
+      context: .
+      dockerfile: ./vuepress/Dockerfile
+    command: ["sh", "/app/start_prod.sh"]
+    networks:
+      - main
+    expose:
+      - 8002
+    ports:
+      - 8002:8002
     labels:
       - traefik.enable=false
 
@@ -52,6 +72,7 @@ services:
       - "90:80"
     depends_on:
       - backend
+      - vuepress
     volumes:
       - ./nginx/prod/prod.conf:/etc/nginx/nginx.conf:ro
       - django-static:/usr/src/app/static
@@ -90,7 +111,7 @@ services:
   flower:
     image: mher/flower
     container_name: flower_prod_vet
-    command: flower --url_prefix=flower
+    command: "--url_prefix=flower --basic_auth=${FLOWER_USERNAME}:${FLOWER_PASSWORD}"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555

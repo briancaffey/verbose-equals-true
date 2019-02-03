@@ -54,6 +54,11 @@ export default new Router({
       beforeEnter: ifNotAuthenticated,
     },
     {
+      path: '/documentation',
+      name: 'Documentation',
+      component: () => import('@/components/documentation/index.vue'),
+    },
+    {
       path: '/debug',
       name: 'debug',
       component: Debug,

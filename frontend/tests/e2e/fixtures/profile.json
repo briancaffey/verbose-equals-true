@@ -1,0 +1,9 @@
+{
+    "avatar": "http://localhost:8080/media/demo1.png",
+    "username": "cypress",
+    "email": "email@cypress.io",
+    "pk": 1,
+    "is_staff": true,
+    "is_superuser": true,
+    "is_active": true
+  }

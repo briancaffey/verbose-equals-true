@@ -10,18 +10,19 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "element-ui":"^2.4.8",
-    "axios":"^0.17.1",
+    "element-ui": "^2.4.8",
+    "axios": "^0.17.1",
     "faker": "^4.1.0",
     "normalize.css": "8.0.0",
     "register-service-worker": "^1.0.0",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vue-analytics": "5.16.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.5",
-    "@vue/cli-plugin-e2e-nightwatch": "^3.0.5",
+    "@vue/cli-plugin-e2e-cypress": "^3.0.3",
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-plugin-pwa": "^3.0.5",
     "@vue/cli-plugin-unit-jest": "^3.0.5",
@@ -30,6 +31,7 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^23.0.1",
+    "cypress": "^3.1.4",
     "node-sass": "^4.11.0",
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17"

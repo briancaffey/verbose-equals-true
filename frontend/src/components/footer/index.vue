@@ -21,7 +21,7 @@
 </style>
 
 <script>
-  export default {
-    name: 'sqreen-footer',
-  }
+export default {
+  name: 'sqreen-footer',
+};
 </script>

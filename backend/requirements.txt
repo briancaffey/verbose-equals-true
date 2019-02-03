@@ -7,8 +7,9 @@ djangorestframework-jwt
 factory_boy
 flake8==3.6
 gunicorn==19.8
+pillow
 psycopg2==2.7
-pytest
-pytest-cov==2.6.0
-pytest-django
+pytest==4.1.1
+pytest-cov==2.6.1
+pytest-django==3.4.6
 redis==2.10.5

@@ -35,6 +35,9 @@ services:
       - "8000:8000"
     networks:
       - main
+    environment:
+      - DEBUG=True
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
     depends_on:
       - db
 
@@ -54,18 +57,22 @@ services:
       - db
     environment:
       - NODE_ENV=development
+      - VUE_APP_DEMO_PASSWORD=${VUE_APP_DEMO_PASSWORD}
 
   vuepress:
     container_name: vuepress_dev_vet
     build:
       context: .
       dockerfile: ./vuepress/Dockerfile
-    command: yarn run docs:dev
+    command: ["sh", "/app/start_dev.sh"]
     volumes:
-      - ./vuepress/docs/:/app/
+      - ./vuepress/docs:/app/docs
     networks:
       - main
+    expose:
+      - 8002
     ports:
+      - 8002:8002
       - 8085:8082
       - 8083:8083
 
@@ -111,7 +118,7 @@ services:
   flower:
     image: mher/flower
     container_name: flower_dev_vet
-    command: flower --url_prefix=flower
+    command: "--url_prefix=flower --basic_auth=${FLOWER_USERNAME}:${FLOWER_PASSWORD}"
     environment:
       - CELERY_BROKER_URL=redis://redis:6379
       - FLOWER_PORT=5555

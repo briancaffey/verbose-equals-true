@@ -11,14 +11,19 @@ const links = {
       'link': '/flower',
     },
     {
-      'type': 'primary',
+      'type': 'default',
       'name': 'Portainer',
       'link': '/portainer',
     },
     {
       'type': 'info',
       'name': 'Django Admin',
-      'link': 'admin',
+      'link': '/admin',
+    },
+    {
+      'type': 'danger',
+      'name': 'Traefik',
+      'link': '/traefik/dashboard/',
     }
   ],
   'Django Commands': [],
