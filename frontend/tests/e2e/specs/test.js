@@ -2,7 +2,7 @@
 
 describe('Test Home Page', () => {
   it('Visits home page', () => {
-    cy.visit('/login');
+    cy.visit('http:localhost:8080/login');
     cy.contains('h1', 'Sign In');
   });
 });
@@ -37,7 +37,7 @@ describe('Test Login', () => {
     });
     cy.fixture('demo1.png').as('profile');
     cy.route('GET', '**/media/demo1.png', '@profile');
-    cy.visit('/login');
+    cy.visit('http:localhost:8080/login');
     cy.get('#login').clear();
     cy.get('#login').type('brian');
     cy.get('#password').clear();
