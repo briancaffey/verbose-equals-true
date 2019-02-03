@@ -8,6 +8,10 @@ variables:
 build:
   image: python:3.6
   script:
+    - echo "Installing awscli"
+    - pip install awscli
+    - echo "login to ecr"
+    - $(aws ecr get-login --region us-east-1)
     - echo "Running build script"
     - echo $REPOSITORY_URL
 
