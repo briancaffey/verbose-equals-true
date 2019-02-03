@@ -6,6 +6,7 @@ variables:
   REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
 
 build:
+  stage: build
   image: python:3.6
   script:
     - echo "Installing awscli"
