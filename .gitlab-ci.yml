@@ -11,6 +11,7 @@ build:
   services:
     - docker:dind
   script:
+    - export DOCKER_HOST="tcp://localhost:2375"
     - apk add --no-cache curl jq python py-pip
     - pip install awscli
     - $(aws ecr get-login --no-include-email --region us-east-1)
