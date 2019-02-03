@@ -12,9 +12,11 @@ build:
     - apk add --no-cache curl jq python py-pip
     - pip install awscli
     - echo "login to ecr"
-    - $(aws ecr get-login --region us-east-1)
+    - $(aws ecr get-login --no-include-email --region us-east-1)
     - echo "Running build script"
     - echo $REPOSITORY_URL
+  tags:
+    - local
 
 test:
   except:
