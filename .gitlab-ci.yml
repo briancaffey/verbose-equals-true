@@ -40,8 +40,7 @@ test_e2e:
   script:
     - cd frontend
     - npm install
-    - sudo apt install httping
+    - apt install httping
     - npm run serve &
     - while ! httping -qc1 http://localhost:8080/login ; do sleep 1 ; done
-    - sleep 3
     - $(npm bin)/cypress run
