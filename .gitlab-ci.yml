@@ -27,7 +27,7 @@ test:
 
 test_unit:
   stage: lint_test_coverage
-  image: node:latest
+  image: node:10.14.2-jessie
   script:
     - cd frontend
     - npm install
