@@ -16,9 +16,9 @@ build:
     - $(aws ecr get-login --no-include-email --region us-east-1)
     - echo "build and push images..."
     - docker info
-    - docker build -t $REPOSITORY_URL/backend:first backend/
+    - docker build -t $REPOSITORY_URL:first backend/
     - docker image ls
-    - docker push $REPOSITORY_URL/backend:first
+    - docker push $REPOSITORY_URL:first
 
 test:
   except:
