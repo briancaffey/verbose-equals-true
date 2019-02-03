@@ -34,8 +34,8 @@ services:
     build: ./backend
     command: /start_prod.sh
     volumes:
-      - .:/code
-      - django-static:/code/backend/static
+      - ./backend:/code
+      - django-static:/code/static
     ports:
       - "8000:8000"
     networks:
