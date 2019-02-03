@@ -7,9 +7,9 @@ variables:
 
 build:
   stage: build
-  image: python:3.6
+  image: docker:latest
   script:
-    - echo "Installing awscli"
+    - apk add --no-cache curl jq python py-pip
     - pip install awscli
     - echo "login to ecr"
     - $(aws ecr get-login --region us-east-1)
