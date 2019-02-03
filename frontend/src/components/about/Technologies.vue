@@ -9,17 +9,18 @@
 
 <script>
 import TechList from './TechList.vue';
-import technologies from './technologies.js';
-  export default {
-    data() {
-      return {
-        technologies: technologies,
-      }
-    },
-    components: {
-      TechList
-    }
-  }
+import technologies from './technologies';
+
+export default {
+  data() {
+    return {
+      technologies,
+    };
+  },
+  components: {
+    TechList,
+  },
+};
 </script>
 
 <style scoped>

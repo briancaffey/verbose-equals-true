@@ -54,14 +54,15 @@
 </template>
 
 <script>
-  import endpoints from './apiEndpoints.js'
-  export default {
-    data() {
-      return {
-        endpoints: endpoints
-      }
-    },
-  }
+import endpoints from './apiEndpoints';
+
+export default {
+  data() {
+    return {
+      endpoints,
+    };
+  },
+};
 </script>
 
 <style scoped>

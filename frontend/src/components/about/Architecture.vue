@@ -10,12 +10,12 @@
 
 <script>
 export default {
-  created(){
-    let drawio = document.createElement('script');
-    drawio.setAttribute('src', "https://www.draw.io/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D14bMG-YVHSNU6uFL2nRydU3szVXQUTOON%26export%3Ddownload")
+  created() {
+    const drawio = document.createElement('script');
+    drawio.setAttribute('src', 'https://www.draw.io/embed2.js?&fetch=https%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D14bMG-YVHSNU6uFL2nRydU3szVXQUTOON%26export%3Ddownload');
     document.head.appendChild(drawio);
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

@@ -21,13 +21,13 @@
 </template>
 
 <script>
-  export default {
-    computed: {
-      devMode: function(){
-        return process.env.NODE_ENV === 'development';
-      }
+export default {
+  computed: {
+    devMode() {
+      return process.env.NODE_ENV === 'development';
     },
-  }
+  },
+};
 </script>
 
 <style scoped>

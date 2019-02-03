@@ -37,20 +37,22 @@
     <h3>About Roles</h3>
     <ul>
       <li><b>Super Users</b> have full permissions</li>
-      <li><b>Staff Users</b> can access the admin interfaces and can be granted specific per model permissions</li>
-      <li><b>Active Users</b> active users can authenticate, but do not have access to the Django Admin interface</li>
+      <li><b>Staff Users</b> can access the admin
+      interfaces and can be granted specific per model permissions</li>
+      <li><b>Active Users</b> active users can authenticate,
+      but do not have access to the Django Admin interface</li>
     </ul>
   </div>
 </template>
 
 <script>
-/* eslint-disable */
-import { mapState } from 'vuex'
+/* eslint-disable max-len */
+import { mapState } from 'vuex';
 
 export default {
-    name: 'account',
-    computed: mapState({profile: state => state.user.profile})
-  }
+  name: 'account',
+  computed: mapState({ profile: state => state.user.profile }),
+};
 </script>
 
 <style lang="scss" scoped>

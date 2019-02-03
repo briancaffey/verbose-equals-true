@@ -19,53 +19,52 @@
 </template>
 
 <script>
-  import apiCall from '@/utils/api';
-  import demo1 from '@/components/login/assets/demo1.png';
-  import demo2 from '@/components/login/assets/demo2.png';
-  import demo3 from '@/components/login/assets/demo3.png';
-  import demo4 from '@/components/login/assets/demo4.png'
+import demo1 from '@/components/login/assets/demo1.png';
+import demo2 from '@/components/login/assets/demo2.png';
+import demo3 from '@/components/login/assets/demo3.png';
+import demo4 from '@/components/login/assets/demo4.png';
 
-  export default {
-    data() {
-      return {
-        selectedUser: '',
-        default_users: [
-          {
-            username: 'andy',
-            avatar: demo1,
-          },
-          {
-            username: 'brian',
-            avatar: demo2,
-          },
-          {
-            username: 'katie',
-            avatar: demo3,
-          },
-          {
-            username: 'nancy',
-            avatar: demo4,
-          },
-        ],
-      }
+export default {
+  data() {
+    return {
+      selectedUser: '',
+      default_users: [
+        {
+          username: 'andy',
+          avatar: demo1,
+        },
+        {
+          username: 'brian',
+          avatar: demo2,
+        },
+        {
+          username: 'katie',
+          avatar: demo3,
+        },
+        {
+          username: 'nancy',
+          avatar: demo4,
+        },
+      ],
+    };
+  },
+  methods: {
+    isSelected(u) {
+      return u.username === this.selectedUser;
     },
-    methods: {
-      isSelected(u){
-        return u.username == this.selectedUser;
-      },
-      selectUser(u){
-        window.scroll({
-          top: 0,
-          left: 0,
-          behavior: 'smooth'
-        });
-        this.$emit('selectUser', u);
-      },
+    selectUser(u) {
+      window.scroll({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+      this.$emit('selectUser', u);
     },
-    computed: {
-    }
+  },
+  computed: {
+  },
 
-  }
+};
 </script>
 
 <style scoped>

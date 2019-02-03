@@ -16,24 +16,23 @@
 </template>
 
 <script>
-/* eslint-disable */
+/* eslint-disable max-len */
 import { mapGetters } from 'vuex';
-import Navigation from '@/components/navigation'
-import { USER_REQUEST } from '@/store/actions/user'
+import Navigation from '@/components/navigation/index.vue';
+import { USER_REQUEST } from '@/store/actions/user';
 
 export default {
-  components: {
-    Navigation },
+  components: { Navigation },
   name: 'app',
   computed: {
-    ...mapGetters(['getTheme'])
+    ...mapGetters(['getTheme']),
   },
-  created: function () {
+  created() {
     if (this.$store.getters.isAuthenticated) {
-      this.$store.dispatch(USER_REQUEST)
+      this.$store.dispatch(USER_REQUEST);
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">
