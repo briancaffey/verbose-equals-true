@@ -2,17 +2,14 @@ stages:
   - lint_test_coverage
   - build
 
-# This folder is cached between builds
-# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
-  paths:
-  - ~/.cache/pip/
+environment:
+  - REPOSITORY_URL: 733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true
 
-# This is a basic example for a gem or script which doesn't use
-# services such as redis or postgres.
-
-
-
+build:
+  image: python:3.6
+  script:
+    - echo "Running build script"
+    - echo $REPOSITORY_URL
 
 test:
   except:
