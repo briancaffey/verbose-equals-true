@@ -3,7 +3,7 @@ stages:
   - build
 
 variables:
-  - REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
+  REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
 
 build:
   image: python:3.6
