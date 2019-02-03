@@ -19,8 +19,6 @@ build:
     - docker info
     - docker build -t $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA backend
     - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
-  tags:
-    - local
 
 test:
   except:
