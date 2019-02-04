@@ -15,10 +15,10 @@ build:
     - pip install awscli
     - $(aws ecr get-login --no-include-email --region us-east-1)
     - echo "build and push images..."
-    - docker info
-    - docker build -t $REPOSITORY_URL:first backend/
-    - docker image ls
-    - docker push $REPOSITORY_URL:first
+    - docker build -t $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA backend/
+    - docker build -t $REPOSITORY_URL/nginx:$CI_COMMIT_SHORT_SHA -f nginx/prod/Dockerfile .
+    - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
+    - docker push $REPOSITORY_URL/nginx:$CI_COMMIT_SHORT_SHA
 
 test:
   except:
