@@ -1,16 +1,28 @@
 stages:
   - lint_test_coverage
+  - build
 
-# This folder is cached between builds
-# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
-  paths:
-  - ~/.cache/pip/
+variables:
+  REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
 
-# This is a basic example for a gem or script which doesn't use
-# services such as redis or postgres.
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - apk add --no-cache curl jq python py-pip
+    - pip install awscli
+    - $(aws ecr get-login --no-include-email --region us-east-1)
+    - echo "build and push images..."
+    - docker build -t $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA backend/
+    - docker build -t $REPOSITORY_URL/nginx:$CI_COMMIT_SHORT_SHA -f nginx/prod/Dockerfile .
+    - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
+    - docker push $REPOSITORY_URL/nginx:$CI_COMMIT_SHORT_SHA
 
 test:
+  except:
+    - build
   services:
     - postgres:latest
   image: python:3.6
@@ -26,6 +38,8 @@ test:
 
 
 test_unit:
+  except:
+    - build
   stage: lint_test_coverage
   image: node:10.14.2-jessie
   script:
@@ -35,6 +49,8 @@ test_unit:
     - npm run test:unit
 
 test_e2e:
+  except:
+    - build
   image: cypress/base:10
   stage: lint_test_coverage
   script:
