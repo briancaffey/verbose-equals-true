@@ -2,6 +2,8 @@ stages:
   - lint_test_coverage
   - build-aws
   - build
+  - release
+  - deploy
 
 
 build-backend:
@@ -25,10 +27,32 @@ build-nginx:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG backend/
+    - docker build -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG -f nginx/prod/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
   only:
     - develop
+
+release-backend:
+  stage: release
+  image: docker:latest
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
+    - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
+    - docker push $CI_REGISTRY_IMAGE/backend:latest
+
+release-nginx:
+  stage: release
+  image: docker:latest
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
+    - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
+    - docker push $CI_REGISTRY_IMAGE/nginx:latest
+
+deploy:
+  stage: deploy
+  image: docker:latest
+  script:
+    - echo "Deploying production images..."
 
 .build-ecr:
   stage: build-aws
