@@ -1,5 +1,9 @@
 defaultEntryPoints = ["http"]
 
+[entryPoints]
+    [entryPoints.http]
+    address = ":80"
+
 [web]
 # Port for the status page
 address = ":8080"
