@@ -35,6 +35,8 @@ build-nginx:
 release-backend:
   stage: release
   image: docker:latest
+  services:
+    - docker:dind
   script:
     - docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
@@ -43,6 +45,8 @@ release-backend:
 release-nginx:
   stage: release
   image: docker:latest
+  services:
+    - docker:dind
   script:
     - docker pull $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
     - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
