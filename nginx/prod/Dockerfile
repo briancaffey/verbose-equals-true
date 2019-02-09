@@ -4,6 +4,7 @@ WORKDIR /app/
 COPY frontend/package.json /app/
 RUN npm cache verify
 RUN npm install
+RUN npm i -d ajv@5.0.0
 COPY frontend /app/
 RUN npm run build
 
