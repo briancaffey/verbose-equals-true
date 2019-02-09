@@ -7,6 +7,8 @@ stages:
 build-backend:
   stage: build
   image: docker:stable
+  variables:
+    - DOCKER_HOST="tcp://localhost:2375"
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
@@ -18,6 +20,8 @@ build-backend:
 build-nginx:
   stage: build
   image: docker:stable
+  variables:
+    - DOCKER_HOST="tcp://localhost:2375"
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
