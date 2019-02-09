@@ -1,13 +1,36 @@
 stages:
   - lint_test_coverage
+  - build-aws
   - build
 
-variables:
-  REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
 
-build:
+build-backend:
   stage: build
+  image: docker:stable
+  before-script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG backend/
+    - docker push $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
+  only:
+    - develop
+
+build-nginx:
+  stage: build
+  image: docker:stable
+  before-script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG backend/
+    - docker push $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
+  only:
+    - develop
+
+.build-ecr:
+  stage: build-aws
   image: docker:latest
+  variables:
+    REPOSITORY_URL: "733623710918.dkr.ecr.us-east-1.amazonaws.com/verbose-equals-true"
   services:
     - docker:dind
   script:
