@@ -37,6 +37,9 @@
     "sass-loader": "^7.0.1",
     "vue-template-compiler": "^2.5.17"
   },
+  "resolutions": {
+    "ajv": "6.5.5"
+  },
   "eslintConfig": {
     "root": true,
     "env": {
