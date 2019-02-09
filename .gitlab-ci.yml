@@ -7,7 +7,7 @@ stages:
 build-backend:
   stage: build
   image: docker:stable
-  before-script:
+  before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG backend/
@@ -18,7 +18,7 @@ build-backend:
 build-nginx:
   stage: build
   image: docker:stable
-  before-script:
+  before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker build -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG backend/
