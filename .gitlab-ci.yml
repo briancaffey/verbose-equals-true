@@ -7,9 +7,8 @@ stages:
 build-backend:
   stage: build
   image: docker:stable
-  variables:
-    DOCKER_HOST: "tcp://localhost:2375"
   before_script:
+    - export DOCKER_HOST="tcp://localhost:2375"
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker build -t $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG backend/
@@ -23,6 +22,7 @@ build-nginx:
   variables:
     DOCKER_HOST: "tcp://localhost:2375"
   before_script:
+    - export DOCKER_HOST="tcp://localhost:2375"
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker build -t $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG backend/
