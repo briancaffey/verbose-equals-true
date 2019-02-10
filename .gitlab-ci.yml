@@ -57,7 +57,7 @@ stages:
     - docker push $CI_REGISTRY_IMAGE/nginx:latest
 
 deploy:
-  stage: ssh
+  stage: deploy
   image: docker:stable
   variables:
     DOCKER_HOST: "tcp://$DROPLET_IP:2375"
