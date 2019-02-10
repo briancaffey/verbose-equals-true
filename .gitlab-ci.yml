@@ -6,7 +6,7 @@ stages:
   - deploy
 
 
-build-backend:
+.build-backend:
   stage: build
   image: docker:stable
   services:
@@ -19,7 +19,7 @@ build-backend:
   only:
     - develop
 
-build-nginx:
+.build-nginx:
   stage: build
   image: docker:stable
   services:
@@ -32,7 +32,7 @@ build-nginx:
   only:
     - develop
 
-release-backend:
+.release-backend:
   stage: release
   image: docker:latest
   services:
@@ -44,7 +44,7 @@ release-backend:
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
-release-nginx:
+.release-nginx:
   stage: release
   image: docker:latest
   services:
@@ -59,8 +59,17 @@ release-nginx:
 deploy:
   stage: deploy
   image: docker:latest
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - eval "$(ssh-agent -s)"
+    - ssh-add ~/.ssh/id_rsa
+    - ssh-keyscan -H $SSH_PRIVATE_KEY >> ~/.ssh/known_hosts
+
   script:
-    - echo "Deploying production images..."
+    - echo "Login to production server..."
+    - ssh root@$DEPLOYMENT_SERVER_IP "whoami"
 
 .build-ecr:
   stage: build-aws
@@ -79,9 +88,7 @@ deploy:
     - docker push $REPOSITORY_URL/backend:$CI_COMMIT_SHORT_SHA
     - docker push $REPOSITORY_URL/nginx:$CI_COMMIT_SHORT_SHA
 
-test:
-  except:
-    - develop
+.test:
   services:
     - postgres:latest
   image: python:3.6
@@ -96,9 +103,7 @@ test:
     - pytest --cov
 
 
-test_unit:
-  except:
-    - develop
+.test_unit:
   stage: lint_test_coverage
   image: node:10.14.2-jessie
   script:
@@ -107,9 +112,7 @@ test_unit:
     - npm run lint
     - npm run test:unit
 
-test_e2e:
-  except:
-    - develop
+.test_e2e:
   image: cypress/base:10
   stage: lint_test_coverage
   script:
