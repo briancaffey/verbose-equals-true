@@ -6,7 +6,7 @@ stages:
   - deploy
 
 
-build-backend:
+.build-backend:
   stage: build
   image: docker:stable
   services:
@@ -19,7 +19,7 @@ build-backend:
   only:
     - develop
 
-build-nginx:
+.build-nginx:
   stage: build
   image: docker:stable
   services:
@@ -32,7 +32,7 @@ build-nginx:
   only:
     - develop
 
-build-traefik:
+.build-traefik:
   stage: build
   image: docker:stable
   services:
@@ -45,7 +45,7 @@ build-traefik:
   only:
     - develop
 
-build-vuepress:
+.build-vuepress:
   stage: build
   image: docker:stable
   services:
@@ -59,7 +59,7 @@ build-vuepress:
     - develop
 
 
-release-backend:
+.release-backend:
   stage: release
   image: docker:latest
   services:
@@ -71,7 +71,7 @@ release-backend:
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
-release-nginx:
+.release-nginx:
   stage: release
   image: docker:latest
   services:
@@ -83,7 +83,7 @@ release-nginx:
     - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
     - docker push $CI_REGISTRY_IMAGE/nginx:latest
 
-release-traefik:
+.release-traefik:
   stage: release
   image: docker:latest
   services:
@@ -95,7 +95,7 @@ release-traefik:
     - docker tag $CI_REGISTRY_IMAGE/traefik:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/traefik:latest
     - docker push $CI_REGISTRY_IMAGE/traefik:latest
 
-release-vuepress:
+.release-vuepress:
   stage: release
   image: docker:latest
   services:
