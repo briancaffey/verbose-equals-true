@@ -58,7 +58,7 @@ stages:
 
 deploy:
   stage: deploy
-  image: docker:latest
+  image: docker:stable
   before_script:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
