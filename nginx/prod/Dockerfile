@@ -1,9 +1,8 @@
 # build stage
 FROM node:10.14.2-jessie as build-stage
 WORKDIR /app/
-COPY frontend/package*.json /app/
+COPY frontend/package.json /app/
 RUN npm cache verify
-RUN npx npm-force-resolutions
 RUN npm install
 COPY frontend /app/
 RUN npm run build
