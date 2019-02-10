@@ -67,11 +67,11 @@ deploy:
     - eval "$(ssh-agent -s)"
     - sleep 5;
     - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan -H $SSH_PRIVATE_KEY >> ~/.ssh/known_hosts
+    - ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
 
   script:
     - echo "Login to production server..."
-    - ssh root@$DEPLOYMENT_SERVER_IP "whoami"
+    - ssh root@$DROPLET_IP "whoami"
 
 .build-ecr:
   stage: build-aws
