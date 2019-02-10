@@ -53,7 +53,7 @@ build-vuepress:
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG -f traefik/Dockerfile .
+    - docker build -t $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG -f vuepress/Dockerfile .
     - docker push $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG
   only:
     - develop
