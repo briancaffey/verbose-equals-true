@@ -1,0 +1,113 @@
+version: '3'
+
+services:
+
+  traefik:
+    image: registry.gitlab.com/briancaffey/verbose-equals-true/traefik-dev:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "443:443"
+      - "80:80"
+      - "8070:8081"
+    networks:
+      - main
+
+  db:
+    image: postgres
+    networks:
+      - main
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  backend:
+    image: registry.gitlab.com/briancaffey/verbose-equals-true/backend:latest
+    command: /start_prod.sh
+    volumes:
+      - django-static:/code/static
+    ports:
+      - "8000:8000"
+    networks:
+      - main
+    environment:
+      - DEBUG=False
+      - VUE_APP_DEMO_PASSWORD=asdfghjkl
+    depends_on:
+      - db
+
+  vuepress:
+    image: registry.gitlab.com/briancaffey/verbose-equals-true/vuepress:latest
+    command: ["sh", "/app/start_prod.sh"]
+    networks:
+      - main
+    expose:
+      - 8002
+    ports:
+      - 8002:8002
+
+  nginx:
+    image: registry.gitlab.com/briancaffey/verbose-equals-true/nginx:latest
+    ports:
+      - "90:80"
+    depends_on:
+      - backend
+      - vuepress
+    volumes:
+      - django-static:/usr/src/app/static
+    networks:
+      - main
+
+  redis:
+    image: redis:alpine
+    networks:
+      - main
+
+  celery:
+    image: registry.gitlab.com/briancaffey/verbose-equals-true/backend:latest
+    command: bash -c 'celery worker --app=backend.celery_app:app --loglevel=info'
+    depends_on:
+      - db
+      - redis
+    networks:
+      - main
+
+  flower:
+    image: mher/flower
+    command: "--url_prefix=flower"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLOWER_PORT=5555
+    ports:
+      - 5555:5555
+    networks:
+      - main
+    depends_on:
+      - celery
+      - redis
+
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    ports:
+      - 9000:9000
+    networks:
+      - main
+
+  viz:
+    image: dockersamples/visualizer
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+    - "8080:8088"
+
+volumes:
+  django-static:
+  portainer-data:
+  pg-data:
+
+networks:
+  main:
+    driver: overlay
