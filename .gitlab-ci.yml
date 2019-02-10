@@ -63,7 +63,7 @@ deploy:
     DOCKER_HOST: "tcp://$DROPLET_IP:2375"
     DOCKER_TLS_VERIFY: 1
   before_script:
-    - docker login -u gitlab-ci-token -p "$CI_BUILD_TOKEN" "$CI_REGISTRY"
+    - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
     - mkdir -p ~/.docker
     - echo "$TLS_CA_CERT" > ~/.docker/ca.pem
     - echo "$TLS_CERT" > ~/.docker/cert.pem
