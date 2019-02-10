@@ -6,7 +6,7 @@ stages:
   - deploy
 
 
-.build-backend:
+build-backend:
   stage: build
   image: docker:stable
   services:
@@ -19,7 +19,7 @@ stages:
   only:
     - develop
 
-.build-nginx:
+build-nginx:
   stage: build
   image: docker:stable
   services:
@@ -32,7 +32,34 @@ stages:
   only:
     - develop
 
-.release-backend:
+build-traefik:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/traefik:$CI_COMMIT_REF_SLUG -f traefik/dev/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/traefik:$CI_COMMIT_REF_SLUG
+  only:
+    - develop
+
+build-vuepress:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG -f traefik/Dockerfile .
+    - docker push $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG
+  only:
+    - develop
+
+
+release-backend:
   stage: release
   image: docker:latest
   services:
@@ -44,7 +71,7 @@ stages:
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
-.release-nginx:
+release-nginx:
   stage: release
   image: docker:latest
   services:
@@ -55,6 +82,30 @@ stages:
     - docker pull $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
     - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
     - docker push $CI_REGISTRY_IMAGE/nginx:latest
+
+release-traefik:
+  stage: release
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/traefik:$CI_COMMIT_REF_SLUG
+    - docker tag $CI_REGISTRY_IMAGE/traefik:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/traefik:latest
+    - docker push $CI_REGISTRY_IMAGE/traefik:latest
+
+release-vuepress:
+  stage: release
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG
+    - docker tag $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/vuepress:latest
+    - docker push $CI_REGISTRY_IMAGE/vuepress:latest
 
 deploy:
   stage: deploy
@@ -69,7 +120,7 @@ deploy:
     - echo "$TLS_KEY" > ~/.docker/key.pem
   script:
     - docker login -u gitlab-ci-token -p "$CI_JOB_TOKEN" "$CI_REGISTRY"
-    - docker stack deploy --with-registry-auth --compose-file=docker-stack.yml
+    - docker stack deploy --with-registry-auth --compose-file=docker-stack.yml verbose-equals-true-stack
 
 .deploy-ssh:
   stage: deploy
@@ -88,8 +139,6 @@ deploy:
   script:
     - echo "Login to production server..."
     - ssh root@$DROPLET_IP "whoami"
-    # - ssh root@$DROPLET_IP echo < docker-compose.yml
-    # - cat docker-compose.yml | docker stack deploy --compose-file - vossibility
 
 .build-ecr:
   stage: build-aws
