@@ -37,6 +37,8 @@ release-backend:
   image: docker:latest
   services:
     - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker pull $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
@@ -47,6 +49,8 @@ release-nginx:
   image: docker:latest
   services:
     - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker pull $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
     - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
