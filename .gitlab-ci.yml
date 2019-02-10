@@ -60,12 +60,13 @@ deploy:
   stage: deploy
   image: ubuntu
   before_script:
+    - ls
+    - pwd
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
-    - sleep 5;
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
 
