@@ -64,6 +64,7 @@ deploy:
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - eval "$(ssh-agent -s)"
+    - sleep 5;
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H $SSH_PRIVATE_KEY >> ~/.ssh/known_hosts
 
