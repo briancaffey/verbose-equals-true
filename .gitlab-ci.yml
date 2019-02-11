@@ -113,7 +113,7 @@ deploy:
   services:
     - docker:dind
   variables:
-    DOCKER_HOST: "tcp://$DROPLET_IP:2375"
+    DOCKER_HOST: "tcp://$DROPLET_IP:2377"
     DOCKER_TLS_VERIFY: 1
   before_script:
     - mkdir -p ~/.docker
