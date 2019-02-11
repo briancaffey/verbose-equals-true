@@ -107,7 +107,7 @@ stages:
     - docker tag $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/vuepress:latest
     - docker push $CI_REGISTRY_IMAGE/vuepress:latest
 
-deploy:
+.deploy:
   stage: deploy
   image: docker:stable
   variables:
@@ -123,7 +123,7 @@ deploy:
     - docker info
     - docker stack deploy --with-registry-auth --compose-file=docker-stack.yml verbose-equals-true-stack
 
-.deploy-ssh:
+deploy-ssh:
   stage: deploy
   image: ubuntu
   before_script:
@@ -139,7 +139,7 @@ deploy:
 
   script:
     - echo "Login to production server..."
-    - ssh root@$DROPLET_IP "whoami"
+    - ssh brian@$DROPLET_IP "whoami"
 
 .build-ecr:
   stage: build-aws
