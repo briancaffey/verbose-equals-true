@@ -16,6 +16,8 @@
     <p>For a visual overview of this project, see
       the architecture overview.</p>
 
+    <p>Coming soon: continuous deployment with GitLab and docker!</p>
+
     <router-link class="link" to="/about/architecture/">
       <el-button>Architecture Overview</el-button>
     </router-link>
