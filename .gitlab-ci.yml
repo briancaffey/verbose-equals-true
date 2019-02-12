@@ -123,7 +123,7 @@ stages:
     - docker info
     - docker stack deploy --with-registry-auth --compose-file=docker-stack.yml verbose-equals-true-stack
 
-.deploy-ssh:
+deploy-ssh:
   stage: deploy
   image: docker:stable
   variables:
