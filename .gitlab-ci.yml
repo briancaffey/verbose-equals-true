@@ -129,7 +129,7 @@ deploy-ssh:
   variables:
     DOCKER_HOST: "ssh://root@$DROPLET_IP"
   before_script:
-    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - 'which ssh-agent || ( apk update -y && apk add openssh-client -y )'
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
