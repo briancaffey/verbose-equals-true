@@ -107,7 +107,7 @@ stages:
     - docker tag $CI_REGISTRY_IMAGE/vuepress:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/vuepress:latest
     - docker push $CI_REGISTRY_IMAGE/vuepress:latest
 
-deploy:
+.deploy:
   stage: deploy
   image: docker:stable
   variables:
@@ -125,10 +125,10 @@ deploy:
 
 .deploy-ssh:
   stage: deploy
-  image: ubuntu
+  image: docker:
+  variables:
+    DOCKER_HOST: "ssh://root@$DROPLET_IP"
   before_script:
-    - ls
-    - pwd
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
@@ -136,10 +136,8 @@ deploy:
     - eval "$(ssh-agent -s)"
     - ssh-add ~/.ssh/id_rsa
     - ssh-keyscan -H $DROPLET_IP >> ~/.ssh/known_hosts
-
   script:
-    - echo "Login to production server..."
-    - ssh brian@$DROPLET_IP "whoami"
+    - docker stack deploy -c docker-stack.yml verbose-equals-true-stack
 
 .build-ecr:
   stage: build-aws
