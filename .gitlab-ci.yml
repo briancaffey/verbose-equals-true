@@ -19,7 +19,7 @@ stages:
   only:
     - develop
 
-build-nginx:
+.build-nginx:
   stage: build
   image: docker:stable
   services:
