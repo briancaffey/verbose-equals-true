@@ -125,7 +125,7 @@ stages:
 
 .deploy-ssh:
   stage: deploy
-  image: docker:
+  image: docker:stable
   variables:
     DOCKER_HOST: "ssh://root@$DROPLET_IP"
   before_script:
