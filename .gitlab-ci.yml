@@ -32,7 +32,7 @@ stages:
   only:
     - develop
 
-build-traefik:
+.build-traefik:
   stage: build
   image: docker:stable
   services:
@@ -83,7 +83,7 @@ build-traefik:
     - docker tag $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/nginx:latest
     - docker push $CI_REGISTRY_IMAGE/nginx:latest
 
-release-traefik:
+.release-traefik:
   stage: release
   image: docker:latest
   services:

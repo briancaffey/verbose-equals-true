@@ -56,6 +56,11 @@ services:
       - django-static:/usr/src/app/static
     networks:
       - main
+    labels:
+      - "traefik.backend=nginx"
+      - "traefik.frontend.rule=PathPrefix: /"
+      - traefik.docker.network=main
+      - traefik.port=80
 
   redis:
     image: redis:alpine
