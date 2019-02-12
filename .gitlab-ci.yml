@@ -19,7 +19,7 @@ stages:
   only:
     - develop
 
-.build-nginx:
+build-nginx:
   stage: build
   image: docker:stable
   services:
@@ -71,7 +71,7 @@ stages:
     - docker tag $CI_REGISTRY_IMAGE/backend:$CI_COMMIT_REF_SLUG $CI_REGISTRY_IMAGE/backend:latest
     - docker push $CI_REGISTRY_IMAGE/backend:latest
 
-.release-nginx:
+release-nginx:
   stage: release
   image: docker:latest
   services:
