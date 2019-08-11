@@ -3096,7 +3096,8 @@ Let's start with `src/components/navigation/index.vue`. Add a `router-link` for 
 
 This will only be displayed if the user `"isAuthenticated"`.
 
-Now let's add a component that will display posts. In the components folder, create a file called `index.vue`:
+Now let's add a component that will display posts. 
+In the components folder, create a folder called `posts` then create a file called `index.vue`:
 
 ```html
 <template>
@@ -3151,7 +3152,7 @@ const getters = {
 }
 ```
 
-Next, open `src/router/index.vue`, and add import the `Posts` component:
+Next, open `src/router/index.js`, and add import the `Posts` component:
 
 ```js
 import Posts from '../components/posts';
