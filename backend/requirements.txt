@@ -1,6 +1,6 @@
 celery==4.2
 coverage==4.5
-Django==2.1
+Django==2.2.10
 djangorestframework
 django-filter
 djangorestframework-jwt
